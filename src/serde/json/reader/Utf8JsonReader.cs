@@ -25,7 +25,6 @@ namespace Serde.Json
         private ReadOnlyMemory<byte> _buffer;
         private ReadOnlySpan<byte> GetBufferSpan => _buffer.Span;
 
-        private readonly bool _isFinalBlock;
         private readonly bool _isInputSequence;
 
         private long _lineNumber;
@@ -49,7 +48,7 @@ namespace Serde.Json
         private SequencePosition _currentPosition;
         private readonly ReadOnlySequence<byte> _sequence;
 
-        private bool IsLastSpan => _isFinalBlock && (!_isMultiSegment || _isLastSegment);
+        private bool IsLastSpan => !_isMultiSegment || _isLastSegment;
 
         internal ReadOnlySequence<byte> OriginalSequence => _sequence;
 
@@ -141,13 +140,6 @@ namespace Serde.Json
         public bool ValueIsEscaped { get; private set; }
 
         /// <summary>
-        /// Returns the mode of this instance of the <see cref="Utf8JsonReader"/>.
-        /// True when the reader was constructed with the input span containing the entire data to process.
-        /// False when the reader was constructed knowing that the input span may contain partial data with more data to follow.
-        /// </summary>
-        public readonly bool IsFinalBlock => _isFinalBlock;
-
-        /// <summary>
         /// Gets the value of the last processed token as a ReadOnlySpan&lt;byte&gt; slice
         /// of the input payload. If the JSON is provided within a ReadOnlySequence&lt;byte&gt;
         /// and the slice that represents the token value fits in a single segment, then
@@ -204,19 +196,16 @@ namespace Serde.Json
         /// Constructs a new <see cref="Utf8JsonReader"/> instance.
         /// </summary>
         /// <param name="jsonData">The ReadOnlySpan&lt;byte&gt; containing the UTF-8 encoded JSON text to process.</param>
-        /// <param name="isFinalBlock">True when the input span contains the entire data to process.
-        /// Set to false only if it is known that the input span contains partial data with more data to follow.</param>
         /// <param name="state">If this is the first call to the ctor, pass in a default state. Otherwise,
         /// capture the state from the previous instance of the <see cref="Utf8JsonReader"/> and pass that back.</param>
         /// <remarks>
         /// Since this type is a ref struct, it is a stack-only type and all the limitations of ref structs apply to it.
         /// This is the reason why the ctor accepts a <see cref="JsonReaderState"/>.
         /// </remarks>
-        public Utf8JsonReader(ReadOnlyMemory<byte> jsonData, bool isFinalBlock, JsonReaderState state)
+        public Utf8JsonReader(ReadOnlyMemory<byte> jsonData, JsonReaderState state)
         {
             _buffer = jsonData;
 
-            _isFinalBlock = isFinalBlock;
             _isInputSequence = false;
 
             _lineNumber = state._lineNumber;
@@ -237,7 +226,7 @@ namespace Serde.Json
             _consumed = 0;
             TokenStartIndex = 0;
             _totalConsumed = 0;
-            _isLastSegment = _isFinalBlock;
+            _isLastSegment = true;
             _isMultiSegment = false;
 
             _valueMemory = ReadOnlyMemory<byte>.Empty;
@@ -263,7 +252,7 @@ namespace Serde.Json
 
             if (!retVal)
             {
-                if (_isFinalBlock && TokenType == JsonTokenType.None)
+                if (TokenType == JsonTokenType.None)
                 {
                     ThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedJsonTokens);
                 }
@@ -274,9 +263,6 @@ namespace Serde.Json
         /// <summary>
         /// Skips the children of the current JSON token.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when the reader was given partial data with more data to follow (i.e. <see cref="IsFinalBlock"/> is false).
-        /// </exception>
         /// <exception cref="JsonException">
         /// Thrown when an invalid JSON token is encountered while skipping, according to the JSON RFC,
         /// or if the current depth exceeds the recursive limit set by the max depth.
@@ -292,19 +278,12 @@ namespace Serde.Json
         /// </remarks>
         public void Skip()
         {
-            if (!_isFinalBlock)
-            {
-                ThrowHelper.ThrowInvalidOperationException_CannotSkipOnPartial();
-            }
-
             SkipHelper();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipHelper()
         {
-            Debug.Assert(_isFinalBlock);
-
             if (TokenType == JsonTokenType.PropertyName)
             {
                 bool result = Read();
@@ -352,47 +331,8 @@ namespace Serde.Json
         /// </remarks>
         public bool TrySkip()
         {
-            if (_isFinalBlock)
-            {
-                SkipHelper();
-                return true;
-            }
-
-            return TrySkipHelper();
-        }
-
-        private bool TrySkipHelper()
-        {
-            Debug.Assert(!_isFinalBlock);
-
-            Utf8JsonReader restore = this;
-
-            if (TokenType == JsonTokenType.PropertyName)
-            {
-                if (!Read())
-                {
-                    goto Restore;
-                }
-            }
-
-            if (TokenType == JsonTokenType.StartObject || TokenType == JsonTokenType.StartArray)
-            {
-                int depth = CurrentDepth;
-                do
-                {
-                    if (!Read())
-                    {
-                        goto Restore;
-                    }
-                }
-                while (depth < CurrentDepth);
-            }
-
+            SkipHelper();
             return true;
-
-        Restore:
-            this = restore;
-            return false;
         }
 
         /// <summary>

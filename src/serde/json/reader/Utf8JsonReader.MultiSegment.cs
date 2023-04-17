@@ -14,19 +14,16 @@ namespace Serde.Json
         /// Constructs a new <see cref="Utf8JsonReader"/> instance.
         /// </summary>
         /// <param name="jsonData">The ReadOnlySequence&lt;byte&gt; containing the UTF-8 encoded JSON text to process.</param>
-        /// <param name="isFinalBlock">True when the input span contains the entire data to process.
-        /// Set to false only if it is known that the input span contains partial data with more data to follow.</param>
         /// <param name="state">If this is the first call to the ctor, pass in a default state. Otherwise,
         /// capture the state from the previous instance of the <see cref="Utf8JsonReader"/> and pass that back.</param>
         /// <remarks>
         /// Since this type is a ref struct, it is a stack-only type and all the limitations of ref structs apply to it.
         /// This is the reason why the ctor accepts a <see cref="JsonReaderState"/>.
         /// </remarks>
-        public Utf8JsonReader(ReadOnlySequence<byte> jsonData, bool isFinalBlock, JsonReaderState state)
+        public Utf8JsonReader(ReadOnlySequence<byte> jsonData, JsonReaderState state)
         {
             _buffer = jsonData.First;
 
-            _isFinalBlock = isFinalBlock;
             _isInputSequence = true;
 
             _lineNumber = state._lineNumber;
@@ -58,7 +55,7 @@ namespace Serde.Json
             {
                 _nextPosition = default;
                 _currentPosition = jsonData.Start;
-                _isLastSegment = isFinalBlock;
+                _isLastSegment = true;
                 _isMultiSegment = false;
             }
             else
@@ -90,7 +87,7 @@ namespace Serde.Json
                 //    Otherwise, we would end up skipping a segment (i.e. advance = false).
                 // If firstSegmentIsEmpty is false,
                 //    make sure to advance _nextPosition so that it is no longer the same as _currentPosition (i.e. advance = true).
-                _isLastSegment = !jsonData.TryGet(ref _nextPosition, out _, advance: !firstSegmentIsEmpty) && isFinalBlock; // Don't re-order to avoid short-circuiting
+                _isLastSegment = !jsonData.TryGet(ref _nextPosition, out _, advance: !firstSegmentIsEmpty); // Don't re-order to avoid short-circuiting
 
                 Debug.Assert(!_nextPosition.Equals(_currentPosition));
 
@@ -110,11 +107,11 @@ namespace Serde.Json
         ///     Since this type is a ref struct, it is a stack-only type and all the limitations of ref structs apply to it.
         ///   </para>
         ///   <para>
-        ///     This assumes that the entire JSON payload is passed in (equivalent to <see cref="IsFinalBlock"/> = true)
+        ///     This assumes that the entire JSON payload is passed in.
         ///   </para>
         /// </remarks>
         public Utf8JsonReader(ReadOnlySequence<byte> jsonData, JsonReaderOptions options = default)
-            : this(jsonData, isFinalBlock: true, new JsonReaderState(options))
+            : this(jsonData, new JsonReaderState(options))
         {
         }
 
@@ -321,10 +318,7 @@ namespace Serde.Json
                 Debug.Assert(!_isMultiSegment || _currentPosition.GetObject() != null);
             }
 
-            if (_isFinalBlock)
-            {
-                _isLastSegment = !_sequence.TryGet(ref _nextPosition, out _, advance: false);
-            }
+            _isLastSegment = !_sequence.TryGet(ref _nextPosition, out _, advance: false);
 
             _buffer = memory;
             _totalConsumed += _consumed;
