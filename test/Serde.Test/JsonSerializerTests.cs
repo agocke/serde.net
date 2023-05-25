@@ -12,6 +12,7 @@ using Xunit;
 using Xunit.Sdk;
 using static Serde.Json.JsonValue;
 using static Serde.Test.JsonSerializerTests;
+using JsonSerializer = Serde.Json.JsonSerializer;
 
 namespace Serde.Test
 {
@@ -32,6 +33,35 @@ namespace Serde.Test
             var actual = Serde.Json.JsonSerializer.Serialize(node);
             using var doc = JsonDocument.Parse(actual);
             Assert.Equal(expected.Trim(), PrettyPrint(actual));
+        }
+
+        partial struct FlattenWrapper : ISerialize
+        {
+            public int A;
+            public FlattenNested Nested;
+            public int B;
+
+            public void Serialize(ISerializer serializer)
+            {
+                var type = serializer.SerializeType("FlattenWrapper", 3);
+                type.SerializeField("A", new Int32Wrap(A));
+                type.SerializeFlattened(Nested);
+                type.SerializeField("B", new Int32Wrap(B));
+                type.End();
+            }
+        }
+
+        [GenerateSerialize]
+        partial struct FlattenNested
+        {
+            public int X;
+        }
+
+        [Fact]
+        public void ManualFlatten()
+        {
+            var result = JsonSerializer.Serialize(new FlattenWrapper { A = 1, Nested = new FlattenNested { X = 2 }, B = 3 });
+            Assert.Equal("""{"A":1,"x":2,"B":3}""", result);
         }
 
         [Fact]

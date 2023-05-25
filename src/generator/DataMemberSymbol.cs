@@ -99,6 +99,8 @@ namespace Serde
 
         public bool SerializeNull => _memberOptions.SerializeNull ?? _typeOptions.SerializeNull;
 
+        public bool Flatten => _memberOptions.Flatten;
+
         public ImmutableArray<AttributeData> Attributes => Symbol.GetAttributes();
 
         /// <summary>

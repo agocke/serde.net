@@ -34,4 +34,7 @@ internal readonly record struct MemberOptions()
 
     /// <see cref="SerdeMemberOptions.SkipDeserialize" />
     public bool SkipDeserialize { get; init; } = false;
+
+    /// <see cref="SerdeMemberOptions.Flatten" />
+    public bool Flatten { get; init; } = false;
 }

@@ -158,6 +158,12 @@ sealed class SerdeMemberOptions : Attribute
     /// Skip deserialization of this member.
     /// </summary>
     public bool SkipDeserialize { get; init; } = false;
+
+    /// <summary>
+    /// Flatten the member into the parent type by treating the members of the member as if they
+    /// were members of the parent type.
+    /// </summary>
+    public bool Flatten { get; init; } = false;
 }
 
 /// <summary>

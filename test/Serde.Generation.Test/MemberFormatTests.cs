@@ -10,6 +10,25 @@ namespace Serde.Test
     public class MemberFormatTests
     {
         [Fact]
+        public Task Flatten()
+        {
+            var src = """
+using Serde;
+
+[GenerateSerde]
+partial record struct Wrapper(int X);
+
+[GenerateSerde]
+partial struct S
+{
+    [SerdeMemberOptions(Flatten = true)]
+    public Wrapper W { get; init; }
+}
+""";
+            return VerifyMultiFile(src);
+        }
+
+        [Fact]
         public Task Default()
         {
             var src = @"

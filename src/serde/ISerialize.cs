@@ -26,6 +26,9 @@ public interface ISerializeType
 
 public static class ISerializeTypeExt
 {
+    public static void SerializeFlattened<T>(this ISerializeType serializeType, T value) where T : ISerialize
+        => value.Serialize(new FlattenSerializer(serializeType));
+
     public static void SerializeFieldIfNotNull<T, U>(
         this ISerializeType serializeType,
         string name,

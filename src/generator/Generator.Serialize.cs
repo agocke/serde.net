@@ -157,7 +157,12 @@ namespace Serde
                 };
 
                 string methodName;
-                if (member.IsNullable && !member.SerializeNull)
+                if (member.Flatten)
+                {
+                    arguments.RemoveAt(0);
+                    methodName = "SerializeFlattened";
+                }
+                else if (member.IsNullable && !member.SerializeNull)
                 {
                     // Use SerializeFieldIfNotNull if it's not been disabled and the field is nullable
                     arguments.Add(MakeMemberAccessExpr(member, receiver));

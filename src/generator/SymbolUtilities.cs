@@ -114,6 +114,14 @@ namespace Serde
                                 }
                             } => options with { SkipDeserialize = (bool)value },
 
+                            {
+                                Key: nameof(MemberOptions.Flatten),
+                                Value: {
+                                    Kind: TypedConstantKind.Primitive,
+                                    Type.SpecialType: SpecialType.System_Boolean
+                                }
+                            } => options with { Flatten = (bool)value },
+
                             _ => options
                         };
                     }
