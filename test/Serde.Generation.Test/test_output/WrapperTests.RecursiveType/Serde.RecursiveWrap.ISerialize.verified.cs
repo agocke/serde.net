@@ -10,8 +10,8 @@ namespace Serde
     {
         void Serde.ISerialize.Serialize(ISerializer serializer)
         {
-            var type = serializer.SerializeType("Recursive", 1);
-            type.SerializeFieldIfNotNull("next"u8, new NullableRefWrap.SerializeImpl<Recursive, RecursiveWrap>(Value.Next), Value.Next);
+            var type = serializer.SerializeType<Recursive>("Recursive", 1);
+            type.SerializeFieldIfNotNull("next", new NullableRefWrap.SerializeImpl<Recursive, RecursiveWrap>(Value.Next), Value.Next);
             type.End();
         }
     }

@@ -198,7 +198,7 @@ public sealed partial class XmlSerializer : ISerializer
         throw new NotSupportedException("Serde.XmlSerializer doesn't currently support serializing dictionaries");
     }
 
-    public ISerializeType SerializeType(string name, int numFields)
+    public ISerializeType SerializeType<T>(string name, int numFields)
     {
         var saved = _state;
         bool writeEnd;
@@ -234,10 +234,6 @@ public sealed partial class XmlSerializer : ISerializer
             _parent._writer.WriteStartElement(name);
             value.Serialize(_parent);
             _parent._writer.WriteEndElement();
-        }
-        void ISerializeType.SerializeField<T>(ReadOnlySpan<byte> name, T value)
-        {
-            SerializeField(Encoding.UTF8.GetString(name), value);
         }
 
         public void SerializeField<T>(string name, T value, ReadOnlySpan<Attribute> attributes)

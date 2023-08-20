@@ -8,7 +8,7 @@ partial struct S1 : Serde.ISerialize
 {
     void Serde.ISerialize.Serialize(ISerializer serializer)
     {
-        var type = serializer.SerializeType("S1", 1);
+        var type = serializer.SerializeType<S1>("S1", 1);
         type.End();
     }
 }

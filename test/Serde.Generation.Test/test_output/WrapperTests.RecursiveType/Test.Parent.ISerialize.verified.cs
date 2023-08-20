@@ -10,8 +10,8 @@ namespace Test
     {
         void Serde.ISerialize.Serialize(ISerializer serializer)
         {
-            var type = serializer.SerializeType("Parent", 1);
-            type.SerializeField("r"u8, new RecursiveWrap(this.R));
+            var type = serializer.SerializeType<Test.Parent>("Parent", 1);
+            type.SerializeField("r", new RecursiveWrap(this.R));
             type.End();
         }
     }

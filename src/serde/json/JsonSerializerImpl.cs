@@ -63,7 +63,7 @@ namespace Serde.Json
             _writer.WriteStringValue(valueName);
         }
 
-        public ISerializeType SerializeType(string name, int numFields)
+        public ISerializeType SerializeType<T>(string name, int numFields)
         {
             _writer.WriteStartObject();
             return this;
@@ -99,7 +99,7 @@ namespace Serde.Json
 
     partial class JsonSerializer : ISerializeType
     {
-        void ISerializeType.SerializeField<T>(ReadOnlySpan<byte> name, T value)
+        void ISerializeType.SerializeField<T>(string name, T value)
         {
             _writer.WritePropertyName(name);
             value.Serialize(this);
@@ -169,7 +169,7 @@ namespace Serde.Json
 
             public ISerializeEnumerable SerializeEnumerable(string typeName, int? length) => throw new KeyNotStringException();
 
-            public ISerializeType SerializeType(string name, int numFields) => throw new KeyNotStringException();
+            public ISerializeType SerializeType<T>(string name, int numFields) => throw new KeyNotStringException();
 
             public void SerializeNull() => throw new KeyNotStringException();
 

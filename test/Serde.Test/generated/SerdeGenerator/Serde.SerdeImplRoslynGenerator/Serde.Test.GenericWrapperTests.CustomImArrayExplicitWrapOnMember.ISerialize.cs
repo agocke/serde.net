@@ -11,8 +11,8 @@ namespace Serde.Test
         {
             void Serde.ISerialize.Serialize(ISerializer serializer)
             {
-                var type = serializer.SerializeType("CustomImArrayExplicitWrapOnMember", 1);
-                type.SerializeField("a"u8, new Serde.Test.GenericWrapperTests.CustomImArrayWrap.SerializeImpl<int, Int32Wrap>(this.A));
+                var type = serializer.SerializeType<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>("CustomImArrayExplicitWrapOnMember", 1);
+                type.SerializeField("a", new Serde.Test.GenericWrapperTests.CustomImArrayWrap.SerializeImpl<int, Int32Wrap>(this.A));
                 type.End();
             }
         }

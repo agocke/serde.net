@@ -8,8 +8,8 @@ partial class C : Serde.ISerialize
 {
     void Serde.ISerialize.Serialize(ISerializer serializer)
     {
-        var type = serializer.SerializeType("C", 1);
-        type.SerializeField("intArr"u8, new ArrayWrap.SerializeImpl<int, Int32Wrap>(this.IntArr));
+        var type = serializer.SerializeType<C>("C", 1);
+        type.SerializeField("intArr", new ArrayWrap.SerializeImpl<int, Int32Wrap>(this.IntArr));
         type.End();
     }
 }

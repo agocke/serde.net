@@ -10,9 +10,9 @@ namespace Serde
     {
         void Serde.ISerialize.Serialize(ISerializer serializer)
         {
-            var type = serializer.SerializeType("Section", 2);
-            type.SerializeField("mask"u8, new Int16Wrap(Value.Mask));
-            type.SerializeField("offset"u8, new Int16Wrap(Value.Offset));
+            var type = serializer.SerializeType<System.Collections.Specialized.BitVector32.Section>("Section", 2);
+            type.SerializeField("mask", new Int16Wrap(Value.Mask));
+            type.SerializeField("offset", new Int16Wrap(Value.Offset));
             type.End();
         }
     }

@@ -24,6 +24,7 @@ namespace Serde
         {
             var statements = new List<StatementSyntax>();
             var fieldsAndProps = SymbolUtilities.GetDataMembers(receiverType, SerdeUsage.Serialize);
+            var typeSyntax = receiverType.ToFqnSyntax();
 
             if (receiverType.TypeKind == TypeKind.Enum)
             {
@@ -37,7 +38,7 @@ namespace Serde
                 // };
                 // serializer.SerializeEnumValue("Enum", name, receiver);
                 var enumType = (INamedTypeSymbol)receiverType;
-                var typeSyntax = enumType.ToFqnSyntax();
+
                 var cases = fieldsAndProps.Select(m => SwitchExpressionArm(
                         ConstantPattern(QualifiedName((NameSyntax)typeSyntax, IdentifierName(m.Name))),
                         whenClause: null,
@@ -80,7 +81,11 @@ namespace Serde
                         Identifier("type"),
                         argumentList: null,
                         EqualsValueClause(InvocationExpression(
-                            QualifiedName(IdentifierName("serializer"), IdentifierName("SerializeType")),
+                            QualifiedName(
+                                IdentifierName("serializer"),
+                                GenericName(
+                                    Identifier("SerializeType"),
+                                    TypeArgumentList(SeparatedList(new[] { receiverType.ToFqnSyntax() })))),
                             ArgumentList(SeparatedList(new [] {
                                 Argument(StringLiteral(receiverType.Name)), Argument(NumericLiteral(fieldsAndProps.Count))
                             }))
@@ -152,8 +157,8 @@ namespace Serde
             static ExpressionStatementSyntax MakeSerializeFieldStmt(DataMemberSymbol member, ExpressionSyntax value, ExpressionSyntax receiver)
             {
                 var arguments = new List<ExpressionSyntax>() {
-                        // "FieldName"u8
-                        ParseExpression($"\"{member.GetFormattedName()}\"u8"),
+                        // "FieldName"
+                        ParseExpression($"\"{member.GetFormattedName()}\""),
                         // Value
                         value
                 };

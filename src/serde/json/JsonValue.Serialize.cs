@@ -47,7 +47,7 @@ namespace Serde.Json
 
             public override void Serialize(ISerializer serializer)
             {
-                var type = serializer.SerializeType("", Members.Count);
+                var type = serializer.SerializeType<Object>("", Members.Count);
                 foreach (var (name, node) in Members.OrderBy(kvp => kvp.Key))
                 {
                     type.SerializeField(name, node);

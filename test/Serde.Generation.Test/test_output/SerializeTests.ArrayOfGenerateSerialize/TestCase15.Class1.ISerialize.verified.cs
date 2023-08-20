@@ -10,9 +10,9 @@ partial class TestCase15
     {
         void Serde.ISerialize.Serialize(ISerializer serializer)
         {
-            var type = serializer.SerializeType("Class1", 2);
-            type.SerializeField("field0"u8, new Int32Wrap(this.Field0));
-            type.SerializeField("field1"u8, new ByteWrap(this.Field1));
+            var type = serializer.SerializeType<TestCase15.Class1>("Class1", 2);
+            type.SerializeField("field0", new Int32Wrap(this.Field0));
+            type.SerializeField("field1", new ByteWrap(this.Field1));
             type.End();
         }
     }
