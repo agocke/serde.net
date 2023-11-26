@@ -11,7 +11,7 @@ namespace Test
         void Serde.ISerialize.Serialize(ISerializer serializer)
         {
             var type = serializer.SerializeType("Recursive", 1);
-            type.SerializeFieldIfNotNull("next"u8, new RecursiveWrap(Value.Next), Value.Next);
+            type.SerializeFieldIfNotNull("next", new RecursiveWrap(Value.Next), Value.Next);
             type.End();
         }
     }

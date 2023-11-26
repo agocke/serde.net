@@ -119,7 +119,7 @@ namespace Serde.Json
 
     partial class JsonSerializer : ISerializeType
     {
-        void ISerializeType.SerializeField<T>(Utf8Span name, T value)
+        void ISerializeType.SerializeField<T>(string name, T value)
         {
             _writer.WritePropertyName(name);
             value.Serialize(this);

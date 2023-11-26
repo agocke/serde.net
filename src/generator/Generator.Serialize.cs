@@ -152,8 +152,8 @@ namespace Serde
             static ExpressionStatementSyntax MakeSerializeFieldStmt(DataMemberSymbol member, ExpressionSyntax value, ExpressionSyntax receiver)
             {
                 var arguments = new List<ExpressionSyntax>() {
-                        // "FieldName"u8
-                        ParseExpression($"\"{member.GetFormattedName()}\"u8"),
+                        // "FieldName"
+                        ParseExpression($"\"{member.GetFormattedName()}\""),
                         // Value
                         value
                 };
