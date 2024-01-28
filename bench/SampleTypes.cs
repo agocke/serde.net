@@ -46,9 +46,10 @@ namespace Benchmarks
 
         public static Location Deserialize<D>(ref D deserializer) where D : IDeserializer
         {
-            return Deserialize<Location, D>(ref deserializer);
+            return deserializer.DeserializeDictionary<Location, Visitor>(new Visitor());
         }
-        private sealed class LocationVisitor : IDeserializeVisitor<Location>
+
+        private sealed class Visitor : IDeserializeVisitor<Location>
         {
             public string ExpectedTypeName => nameof(Location);
 
