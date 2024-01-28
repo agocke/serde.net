@@ -87,11 +87,11 @@ namespace Serde
         T DeserializeFloat<T, V>(V v) where V : IDeserializeVisitor<T>;
         T DeserializeDouble<T, V>(V v) where V : IDeserializeVisitor<T>;
         T DeserializeDecimal<T, V>(V v) where V : IDeserializeVisitor<T>;
-        T DeserializeString<T, V>(V v) where V : IDeserializeVisitor<T>;
+        T DeserializeString<T>(IDeserializeVisitor<T> v);
         T DeserializeIdentifier<T, V>(V v) where V : IDeserializeVisitor<T>;
         T DeserializeType<T, V>(string typeName, ReadOnlySpan<string> fieldNames, V v) where V : IDeserializeVisitor<T>;
         T DeserializeEnumerable<T, V>(V v) where V : IDeserializeVisitor<T>;
-        T DeserializeDictionary<T, V>(V v) where V : IDeserializeVisitor<T>;
+        T DeserializeDictionary<T>(IDeserializeVisitor<T> v);
         T DeserializeNullableRef<T, V>(V v) where V : IDeserializeVisitor<T>;
     }
 }

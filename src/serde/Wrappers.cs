@@ -422,7 +422,7 @@ namespace Serde
         public static string Deserialize<D>(ref D deserializer)
             where D : IDeserializer
         {
-            return deserializer.DeserializeString<string, SerdeVisitor>(new SerdeVisitor());
+            return deserializer.DeserializeString(new SerdeVisitor());
         }
 
         private class SerdeVisitor : IDeserializeVisitor<string>

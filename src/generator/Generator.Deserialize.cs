@@ -99,13 +99,7 @@ namespace Serde
                 stmts.Add(ReturnStatement(InvocationExpression(
                     QualifiedName(
                         IdentifierName("deserializer"),
-                        GenericName(
-                            Identifier("DeserializeString"),
-                            TypeArgumentList(SeparatedList(new TypeSyntax[] {
-                                typeSyntax,
-                                IdentifierName(GeneratedVisitorName)
-                            }))
-                        )
+                        IdentifierName("DeserializeString")
                     ),
                     ArgumentList(SeparatedList(new[] {
                         Argument(IdentifierName("visitor"))
@@ -265,7 +259,7 @@ namespace Serde
 private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
 {
     public static byte Deserialize<D>(ref D deserializer) where D : IDeserializer
-        => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());
+        => deserializer.DeserializeString(new FieldNameVisitor());
 
     public string ExpectedTypeName => "string";
 

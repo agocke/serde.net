@@ -56,11 +56,11 @@ namespace Serde.Json
                     break;
 
                 case JsonTokenType.StartObject:
-                    result = DeserializeDictionary<T, V>(v);
+                    result = DeserializeDictionary(v);
                     break;
 
                 case JsonTokenType.String:
-                    result = DeserializeString<T, V>(v);
+                    result = DeserializeString(v);
                     break;
 
                 case JsonTokenType.True:
@@ -82,7 +82,7 @@ namespace Serde.Json
             return v.VisitBool(b);
         }
 
-        public T DeserializeDictionary<T, V>(V v) where V : IDeserializeVisitor<T>
+        public T DeserializeDictionary<T>(IDeserializeVisitor<T> v)
         {
             ref var reader = ref GetReader();
             reader.ReadOrThrow();
@@ -233,7 +233,7 @@ namespace Serde.Json
             return v.VisitI64(i64);
         }
 
-        public T DeserializeString<T, V>(V v) where V : IDeserializeVisitor<T>
+        public T DeserializeString<T>(IDeserializeVisitor<T> v)
         {
             ref var reader = ref GetReader();
             reader.ReadOrThrow();
@@ -250,12 +250,12 @@ namespace Serde.Json
         }
 
         public T DeserializeIdentifier<T, V>(V v) where V : IDeserializeVisitor<T>
-            => DeserializeString<T, V>(v);
+            => DeserializeString(v);
 
         public T DeserializeType<T, V>(string typeName, ReadOnlySpan<string> fieldNames, V v) where V : IDeserializeVisitor<T>
         {
             // Types are identical to dictionaries
-            return DeserializeDictionary<T, V>(v);
+            return DeserializeDictionary(v);
         }
 
         public T DeserializeByte<T, V>(V v) where V : IDeserializeVisitor<T>
@@ -276,7 +276,7 @@ namespace Serde.Json
         }
 
         public T DeserializeChar<T, V>(V v) where V : IDeserializeVisitor<T>
-            => DeserializeString<T, V>(v);
+            => DeserializeString(v);
 
         public T DeserializeNullableRef<T, V>(V v)
             where V : IDeserializeVisitor<T>
