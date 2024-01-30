@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Serde.Json
 {
-    partial record JsonValue : IDeserialize<JsonValue>
+    partial record JsonValue : IDeserialize<JsonValue, JsonValue>
     {
-        static JsonValue IDeserialize<JsonValue>.Deserialize<D>(ref D deserializer)
+        public static JsonValue Deserialize<D>(ref D deserializer) where D : IDeserializer
         {
             return deserializer.DeserializeAny<JsonValue, Visitor>(Visitor.Instance);
         }

@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial class ArrayField : Serde.IDeserialize<ArrayField>
+partial class ArrayField : Serde.IDeserialize<ArrayField, ArrayField>
 {
-    static ArrayField Serde.IDeserialize<ArrayField>.Deserialize<D>(ref D deserializer)
+    static ArrayField Serde.IDeserialize<ArrayField, ArrayField>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         var fieldNames = new[]
@@ -20,7 +20,7 @@ partial class ArrayField : Serde.IDeserialize<ArrayField>
     {
         public string ExpectedTypeName => "ArrayField";
 
-        private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+        private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
         {
             public static byte Deserialize<D>(ref D deserializer)
                 where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

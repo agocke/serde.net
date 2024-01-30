@@ -72,10 +72,10 @@ namespace Serde
                 => EnumerableHelpers.SerializeSpan<T, TWrap>(typeof(T[]).ToString(), Value, serializer);
         }
 
-        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<T[]>
+        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<DeserializeImpl<T, TWrap>, T[]>
             where TWrap : IDeserialize<T>
         {
-            static T[] IDeserialize<T[]>.Deserialize<D>(ref D deserializer)
+            static T[] IDeserialize<DeserializeImpl<T, TWrap>, T[]>.Deserialize<D>(ref D deserializer)
             {
                 return deserializer.DeserializeEnumerable<T[], SerdeVisitor>(new SerdeVisitor());
             }
@@ -127,10 +127,10 @@ namespace Serde
                 => EnumerableHelpers.SerializeList<T, TWrap>(typeof(List<T>).ToString(), value, serializer);
         }
 
-        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<List<T>>
+        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<DeserializeImpl<T, TWrap>, List<T>>
             where TWrap : IDeserialize<T>
         {
-            static List<T> IDeserialize<List<T>>.Deserialize<D>(ref D deserializer)
+            static List<T> IDeserialize<DeserializeImpl<T, TWrap>, List<T>>.Deserialize<D>(ref D deserializer)
             {
                 return deserializer.DeserializeEnumerable<List<T>, SerdeVisitor>(new SerdeVisitor());
             }
@@ -179,10 +179,10 @@ namespace Serde
                 => EnumerableHelpers.SerializeSpan<T, TWrap>(typeof(ImmutableArray<T>).ToString(), value.AsSpan(), serializer);
         }
 
-        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<ImmutableArray<T>>
+        public readonly struct DeserializeImpl<T, TWrap> : IDeserialize<DeserializeImpl<T, TWrap>, ImmutableArray<T>>
             where TWrap : IDeserialize<T>
         {
-            static ImmutableArray<T> IDeserialize<ImmutableArray<T>>.Deserialize<D>(ref D deserializer)
+            static ImmutableArray<T> IDeserialize<DeserializeImpl<T, TWrap>, ImmutableArray<T>>.Deserialize<D>(ref D deserializer)
             {
                 return deserializer.DeserializeEnumerable<
                     ImmutableArray<T>,

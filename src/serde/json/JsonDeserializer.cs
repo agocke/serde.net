@@ -183,6 +183,20 @@ namespace Serde.Json
 
             public bool TryGetNextKey<K, D>([MaybeNullWhen(false)] out K next) where D : IDeserialize<K>
             {
+                return TryGetNextKey(new DeserializeState<K, D>(), out next);
+            }
+
+            private readonly struct DeserializeState<K, D> : IDeserialize<DeserializeState<K, D>, K>
+                where D : IDeserialize<K>
+            {
+                public static K Deserialize<D1>(ref D1 deserializer) where D1 : IDeserializer
+                {
+                    return D.Deserialize(ref deserializer);
+                }
+            }
+
+            public bool TryGetNextKey<K>(IDeserializeState<K> deserialize, [MaybeNullWhen(false)] out K next)
+            {
                 while (true)
                 {
                     var reader = _deserializer.GetReader();
@@ -195,7 +209,7 @@ namespace Serde.Json
                             next = default;
                             return false;
                         case JsonTokenType.PropertyName:
-                            next = D.Deserialize(ref _deserializer);
+                            next = deserialize.DeserializeState(ref _deserializer);
                             return true;
                         default:
                             // If we aren't at a property name, we must be at a value and intending to skip it

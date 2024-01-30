@@ -7,9 +7,9 @@ namespace Serde.Test
 {
     partial class JsonDeserializeTests
     {
-        partial class NullableFields : Serde.IDeserialize<Serde.Test.JsonDeserializeTests.NullableFields>
+        partial class NullableFields : Serde.IDeserialize<Serde.Test.JsonDeserializeTests.NullableFields, Serde.Test.JsonDeserializeTests.NullableFields>
         {
-            static Serde.Test.JsonDeserializeTests.NullableFields Serde.IDeserialize<Serde.Test.JsonDeserializeTests.NullableFields>.Deserialize<D>(ref D deserializer)
+            static Serde.Test.JsonDeserializeTests.NullableFields Serde.IDeserialize<Serde.Test.JsonDeserializeTests.NullableFields, Serde.Test.JsonDeserializeTests.NullableFields>.Deserialize<D>(ref D deserializer)
             {
                 var visitor = new SerdeVisitor();
                 var fieldNames = new[]
@@ -20,7 +20,7 @@ namespace Serde.Test
                 return deserializer.DeserializeType<Serde.Test.JsonDeserializeTests.NullableFields, SerdeVisitor>("NullableFields", fieldNames, visitor);
             }
 
-            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.JsonDeserializeTests.NullableFields>
+            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.JsonDeserializeTests.NullableFields, Serde.Test.JsonDeserializeTests.NullableFields>
             {
                 public string ExpectedTypeName => "Serde.Test.JsonDeserializeTests.NullableFields";
 

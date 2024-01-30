@@ -7,19 +7,19 @@ namespace Serde.Test
 {
     partial record AllInOne
     {
-        partial record struct ColorEnumWrap : Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum>
+        partial record struct ColorEnumWrap : Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum, Serde.Test.AllInOne.ColorEnum>
         {
-            static Serde.Test.AllInOne.ColorEnum Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum>.Deserialize<D>(ref D deserializer)
+            static Serde.Test.AllInOne.ColorEnum Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum, Serde.Test.AllInOne.ColorEnum>.Deserialize<D>(ref D deserializer)
             {
                 var visitor = new SerdeVisitor();
                 return deserializer.DeserializeString<Serde.Test.AllInOne.ColorEnum, SerdeVisitor>(visitor);
             }
 
-            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.AllInOne.ColorEnum>
+            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.AllInOne.ColorEnum, Serde.Test.AllInOne.ColorEnum>
             {
                 public string ExpectedTypeName => "Serde.Test.AllInOne.ColorEnum";
 
-                Serde.Test.AllInOne.ColorEnum Serde.IDeserializeVisitor<Serde.Test.AllInOne.ColorEnum>.VisitString(string s) => s switch
+                Serde.Test.AllInOne.ColorEnum Serde.IDeserializeVisitor<Serde.Test.AllInOne.ColorEnum, Serde.Test.AllInOne.ColorEnum>.VisitString(string s) => s switch
                 {
                     "red" => Serde.Test.AllInOne.ColorEnum.Red,
                     "blue" => Serde.Test.AllInOne.ColorEnum.Blue,

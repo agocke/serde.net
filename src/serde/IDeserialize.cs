@@ -10,10 +10,29 @@ namespace Serde
     /// for any type that wants to be deserialized by the Serde framework. The implementation should
     /// be independent of the format the type is being deserialized from.
     /// </summary>
-    public interface IDeserialize<T>
+    public interface IDeserialize<T> : IDeserializeState<T>
     {
         abstract static T Deserialize<D>(ref D deserializer)
             where D : IDeserializer;
+    }
+
+    public interface IDeserializeState<T>
+    {
+        T DeserializeState<D>(ref D deserializer)
+            where D : IDeserializer;
+    }
+
+    public interface IDeserialize<TSelf, T> : IDeserialize<T>
+        where TSelf : IDeserialize<TSelf, T>
+    {
+        new abstract static T Deserialize<D>(ref D deserializer)
+            where D : IDeserializer;
+
+        static T IDeserialize<T>.Deserialize<D>(ref D deserializer)
+            => TSelf.Deserialize(ref deserializer);
+
+        T IDeserializeState<T>.DeserializeState<D>(ref D deserializer)
+            => TSelf.Deserialize(ref deserializer);
     }
 
     /// <summary>
@@ -62,8 +81,11 @@ namespace Serde
 
     public interface IDeserializeDictionary
     {
+        bool TryGetNextKey<K>(IDeserializeState<K> deserialize, [MaybeNullWhen(false)] out K next);
+
         bool TryGetNextKey<K, D>([MaybeNullWhen(false)] out K next)
             where D : IDeserialize<K>;
+
         V GetNextValue<V, D>() where D : IDeserialize<V>;
         bool TryGetNextEntry<K, DK, V, DV>([MaybeNullWhen(false)] out (K, V) next)
             where DK : IDeserialize<K>

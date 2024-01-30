@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial class C : Serde.IDeserialize<C>
+partial class C : Serde.IDeserialize<C, C>
 {
-    static C Serde.IDeserialize<C>.Deserialize<D>(ref D deserializer)
+    static C Serde.IDeserialize<C, C>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         var fieldNames = new[]
@@ -20,7 +20,7 @@ partial class C : Serde.IDeserialize<C>
     {
         public string ExpectedTypeName => "C";
 
-        private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+        private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
         {
             public static byte Deserialize<D>(ref D deserializer)
                 where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

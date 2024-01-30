@@ -64,12 +64,13 @@ partial class SerdeImplRoslynGenerator
         GeneratorExecutionContext context,
         ImmutableList<ITypeSymbol> inProgress)
     {
-        var typeSymbol = model.GetDeclaredSymbol(typeDecl);
-        if (typeSymbol is null)
+        var attributedType = model.GetDeclaredSymbol(typeDecl);
+        if (attributedType is null)
         {
             return;
         }
 
+        TypeSyntax selfTypeSyntax;
         ITypeSymbol receiverType;
         ExpressionSyntax receiverExpr;
         bool wrapper;
@@ -79,7 +80,7 @@ partial class SerdeImplRoslynGenerator
         if (attributeData.NamedArguments is [ (nameof(GenerateSerialize.Through), { Value: string memberName }) ])
         {
             wrapper = true;
-            var members = model.LookupSymbols(typeDecl.SpanStart, typeSymbol, memberName);
+            var members = model.LookupSymbols(typeDecl.SpanStart, attributedType, memberName);
             if (members.Length != 1)
             {
                 // TODO: Error about bad lookup
@@ -89,15 +90,17 @@ partial class SerdeImplRoslynGenerator
             receiverExpr = IdentifierName(memberName);
             wrapperName = typeDecl.Identifier.ValueText;
             wrappedName = receiverType.ToDisplayString();
+            selfTypeSyntax = attributedType.ToFqnSyntax();
         }
         // Enums are also always wrapped, but the attribute is on the enum itself
         else if (typeDecl.IsKind(SyntaxKind.EnumDeclaration))
         {
             wrapper = true;
-            receiverType = typeSymbol;
+            receiverType = attributedType;
             receiverExpr = IdentifierName("Value");
             wrappedName = typeDecl.Identifier.ValueText;
             wrapperName = GetWrapperName(wrappedName);
+            selfTypeSyntax = IdentifierName(wrapperName);
         }
         // Just a normal interface implementation
         else
@@ -114,8 +117,9 @@ partial class SerdeImplRoslynGenerator
                     typeDecl.Identifier.ValueText));
                 return;
             }
-            receiverType = typeSymbol;
+            receiverType = attributedType;
             receiverExpr = ThisExpression();
+            selfTypeSyntax = attributedType.ToFqnSyntax();
         }
 
         if (wrapper && usage.HasFlag(SerdeUsage.Serialize))
@@ -133,6 +137,7 @@ partial class SerdeImplRoslynGenerator
             SerializeImplRoslynGenerator.GenerateImpl(
                 usage,
                 new TypeDeclContext(typeDecl),
+                selfTypeSyntax,
                 receiverType,
                 IdentifierName("value"),
                 context,
@@ -143,6 +148,7 @@ partial class SerdeImplRoslynGenerator
         GenerateImpl(
             usage,
             new TypeDeclContext(typeDecl),
+            selfTypeSyntax,
             receiverType,
             receiverExpr,
             context,
@@ -213,6 +219,7 @@ partial record struct {{wrapperName}} : Serde.ISerializeWrap<{{wrappedName}}, {{
     private static void GenerateImpl(
         SerdeUsage usage,
         TypeDeclContext typeDeclContext,
+        TypeSyntax selfTypeSyntax,
         ITypeSymbol receiverType,
         ExpressionSyntax receiverExpr,
         GeneratorExecutionContext context,
@@ -224,7 +231,7 @@ partial record struct {{wrapperName}} : Serde.ISerializeWrap<{{wrappedName}}, {{
         var (implMembers, baseList) = usage switch
         {
             SerdeUsage.Serialize => GenerateSerializeImpl(context, receiverType, receiverExpr, inProgress),
-            SerdeUsage.Deserialize => GenerateDeserializeImpl(context, receiverType, receiverExpr, inProgress),
+            SerdeUsage.Deserialize => GenerateDeserializeImpl(context, selfTypeSyntax, receiverType, receiverExpr, inProgress),
             _ => throw ExceptionUtilities.Unreachable
         };
 

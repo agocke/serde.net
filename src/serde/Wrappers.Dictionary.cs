@@ -45,12 +45,14 @@ namespace Serde
             }
         }
 
-        public readonly struct DeserializeImpl<TKey, TKeyWrap, TValue, TValueWrap> : IDeserialize<Dictionary<TKey, TValue>>
+        public readonly struct DeserializeImpl<TKey, TKeyWrap, TValue, TValueWrap> :
+            IDeserialize<DeserializeImpl<TKey, TKeyWrap, TValue, TValueWrap>, Dictionary<TKey, TValue>>
             where TKey : notnull
             where TKeyWrap : IDeserialize<TKey>
             where TValueWrap : IDeserialize<TValue>
         {
-            static Dictionary<TKey, TValue> IDeserialize<Dictionary<TKey, TValue>>.Deserialize<D>(ref D deserializer)
+            public static Dictionary<TKey, TValue> Deserialize<D>(ref D deserializer)
+                where D : IDeserializer
             {
                 return deserializer.DeserializeDictionary<Dictionary<TKey, TValue>, Visitor>(new Visitor());
             }

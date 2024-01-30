@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial struct Rgb : Serde.IDeserialize<Rgb>
+partial struct Rgb : Serde.IDeserialize<Rgb, Rgb>
 {
-    static Rgb Serde.IDeserialize<Rgb>.Deserialize<D>(ref D deserializer)
+    static Rgb Serde.IDeserialize<Rgb, Rgb>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         var fieldNames = new[]
@@ -21,7 +21,7 @@ partial struct Rgb : Serde.IDeserialize<Rgb>
     {
         public string ExpectedTypeName => "Rgb";
 
-        private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+        private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
         {
             public static byte Deserialize<D>(ref D deserializer)
                 where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

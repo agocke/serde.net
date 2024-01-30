@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial struct PointWrap : Serde.IDeserialize<Point>
+partial struct PointWrap : Serde.IDeserialize<PointWrap, Point>
 {
-    static Point Serde.IDeserialize<Point>.Deserialize<D>(ref D deserializer)
+    static Point Serde.IDeserialize<PointWrap, Point>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         var fieldNames = new[]
@@ -21,7 +21,7 @@ partial struct PointWrap : Serde.IDeserialize<Point>
     {
         public string ExpectedTypeName => "Point";
 
-        private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+        private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
         {
             public static byte Deserialize<D>(ref D deserializer)
                 where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

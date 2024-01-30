@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial record struct ColorIntWrap : Serde.IDeserialize<ColorInt>
+partial record struct ColorIntWrap : Serde.IDeserialize<ColorIntWrap, ColorInt>
 {
-    static ColorInt Serde.IDeserialize<ColorInt>.Deserialize<D>(ref D deserializer)
+    static ColorInt Serde.IDeserialize<ColorIntWrap, ColorInt>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         return deserializer.DeserializeString<ColorInt, SerdeVisitor>(visitor);

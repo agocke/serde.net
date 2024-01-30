@@ -7,9 +7,9 @@ namespace Serde.Test
 {
     partial class JsonDeserializeTests
     {
-        partial record struct IdStructList : Serde.IDeserialize<Serde.Test.JsonDeserializeTests.IdStructList>
+        partial record struct IdStructList : Serde.IDeserialize<Serde.Test.JsonDeserializeTests.IdStructList, Serde.Test.JsonDeserializeTests.IdStructList>
         {
-            static Serde.Test.JsonDeserializeTests.IdStructList Serde.IDeserialize<Serde.Test.JsonDeserializeTests.IdStructList>.Deserialize<D>(ref D deserializer)
+            static Serde.Test.JsonDeserializeTests.IdStructList Serde.IDeserialize<Serde.Test.JsonDeserializeTests.IdStructList, Serde.Test.JsonDeserializeTests.IdStructList>.Deserialize<D>(ref D deserializer)
             {
                 var visitor = new SerdeVisitor();
                 var fieldNames = new[]
@@ -20,7 +20,7 @@ namespace Serde.Test
                 return deserializer.DeserializeType<Serde.Test.JsonDeserializeTests.IdStructList, SerdeVisitor>("IdStructList", fieldNames, visitor);
             }
 
-            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.JsonDeserializeTests.IdStructList>
+            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.JsonDeserializeTests.IdStructList, Serde.Test.JsonDeserializeTests.IdStructList>
             {
                 public string ExpectedTypeName => "Serde.Test.JsonDeserializeTests.IdStructList";
 

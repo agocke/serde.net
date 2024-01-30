@@ -5,9 +5,9 @@ using Serde;
 
 namespace Serde.Test
 {
-    partial struct MaxSizeType : Serde.IDeserialize<Serde.Test.MaxSizeType>
+    partial struct MaxSizeType : Serde.IDeserialize<Serde.Test.MaxSizeType, Serde.Test.MaxSizeType>
     {
-        static Serde.Test.MaxSizeType Serde.IDeserialize<Serde.Test.MaxSizeType>.Deserialize<D>(ref D deserializer)
+        static Serde.Test.MaxSizeType Serde.IDeserialize<Serde.Test.MaxSizeType, Serde.Test.MaxSizeType>.Deserialize<D>(ref D deserializer)
         {
             var visitor = new SerdeVisitor();
             var fieldNames = new[]
@@ -80,7 +80,7 @@ namespace Serde.Test
             return deserializer.DeserializeType<Serde.Test.MaxSizeType, SerdeVisitor>("MaxSizeType", fieldNames, visitor);
         }
 
-        private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.MaxSizeType>
+        private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.MaxSizeType, Serde.Test.MaxSizeType>
         {
             public string ExpectedTypeName => "Serde.Test.MaxSizeType";
 

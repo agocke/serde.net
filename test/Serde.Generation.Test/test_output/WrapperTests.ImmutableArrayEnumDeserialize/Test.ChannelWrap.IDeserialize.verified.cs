@@ -6,9 +6,9 @@ using Serde;
 
 namespace Test
 {
-    partial record struct ChannelWrap : Serde.IDeserialize<Test.Channel>
+    partial record struct ChannelWrap : Serde.IDeserialize<ChannelWrap, Test.Channel>
     {
-        static Test.Channel Serde.IDeserialize<Test.Channel>.Deserialize<D>(ref D deserializer)
+        static Test.Channel Serde.IDeserialize<ChannelWrap, Test.Channel>.Deserialize<D>(ref D deserializer)
         {
             var visitor = new SerdeVisitor();
             return deserializer.DeserializeString<Test.Channel, SerdeVisitor>(visitor);

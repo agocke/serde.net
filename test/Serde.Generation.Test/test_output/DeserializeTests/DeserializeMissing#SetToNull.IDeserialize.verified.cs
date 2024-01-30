@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial record struct SetToNull : Serde.IDeserialize<SetToNull>
+partial record struct SetToNull : Serde.IDeserialize<SetToNull, SetToNull>
 {
-    static SetToNull Serde.IDeserialize<SetToNull>.Deserialize<D>(ref D deserializer)
+    static SetToNull Serde.IDeserialize<SetToNull, SetToNull>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         var fieldNames = new[]
@@ -22,7 +22,7 @@ partial record struct SetToNull : Serde.IDeserialize<SetToNull>
     {
         public string ExpectedTypeName => "SetToNull";
 
-        private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+        private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
         {
             public static byte Deserialize<D>(ref D deserializer)
                 where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

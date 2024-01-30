@@ -7,9 +7,9 @@ namespace Serde.Test
 {
     partial class GenericWrapperTests
     {
-        partial record struct CustomImArrayExplicitWrapOnMember : Serde.IDeserialize<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>
+        partial record struct CustomImArrayExplicitWrapOnMember : Serde.IDeserialize<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember, Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>
         {
-            static Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember Serde.IDeserialize<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>.Deserialize<D>(ref D deserializer)
+            static Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember Serde.IDeserialize<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember, Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>.Deserialize<D>(ref D deserializer)
             {
                 var visitor = new SerdeVisitor();
                 var fieldNames = new[]
@@ -19,7 +19,7 @@ namespace Serde.Test
                 return deserializer.DeserializeType<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember, SerdeVisitor>("CustomImArrayExplicitWrapOnMember", fieldNames, visitor);
             }
 
-            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>
+            private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember, Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember>
             {
                 public string ExpectedTypeName => "Serde.Test.GenericWrapperTests.CustomImArrayExplicitWrapOnMember";
 

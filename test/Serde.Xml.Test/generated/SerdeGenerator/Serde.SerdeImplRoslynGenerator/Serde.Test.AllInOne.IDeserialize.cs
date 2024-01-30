@@ -5,9 +5,9 @@ using Serde;
 
 namespace Serde.Test
 {
-    partial record AllInOne : Serde.IDeserialize<Serde.Test.AllInOne>
+    partial record AllInOne : Serde.IDeserialize<Serde.Test.AllInOne, Serde.Test.AllInOne>
     {
-        static Serde.Test.AllInOne Serde.IDeserialize<Serde.Test.AllInOne>.Deserialize<D>(ref D deserializer)
+        static Serde.Test.AllInOne Serde.IDeserialize<Serde.Test.AllInOne, Serde.Test.AllInOne>.Deserialize<D>(ref D deserializer)
         {
             var visitor = new SerdeVisitor();
             var fieldNames = new[]
@@ -32,7 +32,7 @@ namespace Serde.Test
             return deserializer.DeserializeType<Serde.Test.AllInOne, SerdeVisitor>("AllInOne", fieldNames, visitor);
         }
 
-        private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.AllInOne>
+        private sealed class SerdeVisitor : Serde.IDeserializeVisitor<Serde.Test.AllInOne, Serde.Test.AllInOne>
         {
             public string ExpectedTypeName => "Serde.Test.AllInOne";
 

@@ -59,10 +59,11 @@ namespace Serde
             }
 
             var inProgress = ImmutableList.Create(receiverType);
+            var selfTypeSyntax = containerSymbol.ToFqnSyntax();
 
-            GenerateImpl(SerdeUsage.Serialize, new TypeDeclContext(typeDecl), receiverType, receiverExpr, context, inProgress);
-            SerializeImplRoslynGenerator.GenerateImpl(SerdeUsage.Serialize, new TypeDeclContext(typeDecl), receiverType, receiverExpr, context, inProgress);
-            GenerateImpl(SerdeUsage.Deserialize, new TypeDeclContext(typeDecl), receiverType, receiverExpr, context, inProgress);
+            GenerateImpl(SerdeUsage.Serialize, new TypeDeclContext(typeDecl), selfTypeSyntax, receiverType, receiverExpr, context, inProgress);
+            SerializeImplRoslynGenerator.GenerateImpl(SerdeUsage.Serialize, new TypeDeclContext(typeDecl), selfTypeSyntax, receiverType, receiverExpr, context, inProgress);
+            GenerateImpl(SerdeUsage.Deserialize, new TypeDeclContext(typeDecl), selfTypeSyntax, receiverType, receiverExpr, context, inProgress);
         }
 
         private static TypeSyntax? TryGetCompoundWrapper(ITypeSymbol type, GeneratorExecutionContext context, SerdeUsage usage, ImmutableList<ITypeSymbol> inProgress)

@@ -8,9 +8,9 @@ namespace Serde.Test
 {
     partial record AllInOne
     {
-        partial record struct ColorEnumWrap : Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum>
+        partial record struct ColorEnumWrap : Serde.IDeserialize<ColorEnumWrap, Serde.Test.AllInOne.ColorEnum>
         {
-            static Serde.Test.AllInOne.ColorEnum Serde.IDeserialize<Serde.Test.AllInOne.ColorEnum>.Deserialize<D>(ref D deserializer)
+            static Serde.Test.AllInOne.ColorEnum Serde.IDeserialize<ColorEnumWrap, Serde.Test.AllInOne.ColorEnum>.Deserialize<D>(ref D deserializer)
             {
                 var visitor = new SerdeVisitor();
                 return deserializer.DeserializeString<Serde.Test.AllInOne.ColorEnum, SerdeVisitor>(visitor);

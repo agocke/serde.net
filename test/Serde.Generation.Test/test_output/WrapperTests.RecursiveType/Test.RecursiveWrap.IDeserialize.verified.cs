@@ -6,9 +6,9 @@ using Serde;
 
 namespace Test
 {
-    partial record struct RecursiveWrap : Serde.IDeserialize<Recursive>
+    partial record struct RecursiveWrap : Serde.IDeserialize<Test.RecursiveWrap, Recursive>
     {
-        static Recursive Serde.IDeserialize<Recursive>.Deserialize<D>(ref D deserializer)
+        static Recursive Serde.IDeserialize<Test.RecursiveWrap, Recursive>.Deserialize<D>(ref D deserializer)
         {
             var visitor = new SerdeVisitor();
             var fieldNames = new[]
@@ -22,7 +22,7 @@ namespace Test
         {
             public string ExpectedTypeName => "Recursive";
 
-            private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+            private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
             {
                 public static byte Deserialize<D>(ref D deserializer)
                     where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

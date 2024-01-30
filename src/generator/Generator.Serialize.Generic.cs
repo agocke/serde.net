@@ -48,6 +48,7 @@ partial record struct {{wrapperName}} : Serde.ISerializeWrap<{{wrappedName}}, {{
         internal static void GenerateImpl(
             SerdeUsage usage,
             TypeDeclContext typeDeclContext,
+            TypeSyntax selfTypeSyntax,
             ITypeSymbol receiverType,
             ExpressionSyntax receiverExpr,
             GeneratorExecutionContext context,
@@ -59,7 +60,7 @@ partial record struct {{wrapperName}} : Serde.ISerializeWrap<{{wrappedName}}, {{
             var (implMembers, baseList) = usage switch
             {
                 SerdeUsage.Serialize => GenerateSerializeGenericImpl(context, receiverType, receiverExpr, inProgress),
-                SerdeUsage.Deserialize => SerdeImplRoslynGenerator.GenerateDeserializeImpl(context, receiverType, receiverExpr, inProgress),
+                SerdeUsage.Deserialize => SerdeImplRoslynGenerator.GenerateDeserializeImpl(context, selfTypeSyntax, receiverType, receiverExpr, inProgress),
                 _ => throw ExceptionUtilities.Unreachable
             };
 
@@ -642,6 +643,7 @@ namespace Serde
             GenerateImpl(
                 usage,
                 new TypeDeclContext(typeDecl),
+                IdentifierName(wrapperName),
                 type,
                 IdentifierName(argName),
                 context,

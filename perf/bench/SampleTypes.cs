@@ -55,7 +55,7 @@ namespace Benchmarks
         };
     }
 
-    public partial record LocationWrap : IDeserialize<Location>
+    public partial record LocationWrap : IDeserialize<LocationWrap, Location>
     {
         [GenerateDeserialize]
         private enum FieldNames : byte

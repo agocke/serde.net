@@ -6,9 +6,9 @@ using Serde;
 
 namespace Test
 {
-    partial record struct ChannelList : Serde.IDeserialize<Test.ChannelList>
+    partial record struct ChannelList : Serde.IDeserialize<Test.ChannelList, Test.ChannelList>
     {
-        static Test.ChannelList Serde.IDeserialize<Test.ChannelList>.Deserialize<D>(ref D deserializer)
+        static Test.ChannelList Serde.IDeserialize<Test.ChannelList, Test.ChannelList>.Deserialize<D>(ref D deserializer)
         {
             var visitor = new SerdeVisitor();
             var fieldNames = new[]
@@ -22,7 +22,7 @@ namespace Test
         {
             public string ExpectedTypeName => "Test.ChannelList";
 
-            private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+            private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
             {
                 public static byte Deserialize<D>(ref D deserializer)
                     where D : IDeserializer => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());

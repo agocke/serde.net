@@ -4,9 +4,9 @@
 using System;
 using Serde;
 
-partial record struct ColorEnumWrap : Serde.IDeserialize<ColorEnum>
+partial record struct ColorEnumWrap : Serde.IDeserialize<ColorEnumWrap, ColorEnum>
 {
-    static ColorEnum Serde.IDeserialize<ColorEnum>.Deserialize<D>(ref D deserializer)
+    static ColorEnum Serde.IDeserialize<ColorEnumWrap, ColorEnum>.Deserialize<D>(ref D deserializer)
     {
         var visitor = new SerdeVisitor();
         return deserializer.DeserializeString<ColorEnum, SerdeVisitor>(visitor);

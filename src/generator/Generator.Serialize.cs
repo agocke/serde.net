@@ -302,6 +302,7 @@ namespace Serde
             GenerateImpl(
                 usage,
                 new TypeDeclContext(typeDecl),
+                selfTypeSyntax: ParseTypeName(wrapperName),
                 type,
                 IdentifierName(argName),
                 context,

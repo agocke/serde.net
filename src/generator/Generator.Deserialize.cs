@@ -18,16 +18,17 @@ namespace Serde
 
         internal static (MemberDeclarationSyntax[], BaseListSyntax) GenerateDeserializeImpl(
             GeneratorExecutionContext context,
+            TypeSyntax selfTypeSyntax,
             ITypeSymbol receiverType,
             ExpressionSyntax receiverExpr,
             ImmutableList<ITypeSymbol> inProgress)
         {
             TypeSyntax typeSyntax = ParseTypeName(receiverType.ToDisplayString());
 
-            // `Serde.IDeserialize<'typeName'>
+            // `Serde.IDeserialize<'selfType', 'typeName'>
             var interfaceSyntax = QualifiedName(IdentifierName("Serde"), GenericName(
                 Identifier("IDeserialize"),
-                TypeArgumentList(SeparatedList(new[] { typeSyntax }))
+                TypeArgumentList(SeparatedList(new[] { selfTypeSyntax, typeSyntax }))
             ));
 
             // Generate members for ISerialize.Deserialize implementation
@@ -172,7 +173,7 @@ namespace Serde
             GeneratorExecutionContext context,
             ImmutableList<ITypeSymbol> inProgress)
         {
-            // Serde.IDeserializeVisitor<'typeName'>
+            // Serde.IDeserializeVisitor<'typeName', 'typeName'>
             var interfaceSyntax = QualifiedName(IdentifierName("Serde"), GenericName(
                 Identifier("IDeserializeVisitor"),
                 TypeArgumentList(SeparatedList(new[] { typeSyntax }))
@@ -262,7 +263,7 @@ namespace Serde
         private static MemberDeclarationSyntax GenerateFieldNameVisitor(ITypeSymbol type, string typeName, List<DataMemberSymbol> members)
         {
             var text = $$"""
-private struct FieldNameVisitor : Serde.IDeserialize<byte>, Serde.IDeserializeVisitor<byte>
+private struct FieldNameVisitor : Serde.IDeserialize<FieldNameVisitor, byte>, Serde.IDeserializeVisitor<byte>
 {
     public static byte Deserialize<D>(ref D deserializer) where D : IDeserializer
         => deserializer.DeserializeString<byte, FieldNameVisitor>(new FieldNameVisitor());
