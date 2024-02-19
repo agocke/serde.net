@@ -73,7 +73,7 @@ namespace Benchmarks
 
         public static Location Deserialize<D>(ref D deserializer) where D : IDeserializer
         {
-            return Deserialize<Location, D>(ref deserializer);
+            return deserializer.DeserializeType<Location, LocationVisitor>("Location", Array.Empty<string>(), new LocationVisitor());
         }
         private sealed class LocationVisitor : IDeserializeVisitor<Location>
         {
