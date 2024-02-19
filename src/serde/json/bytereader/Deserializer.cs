@@ -324,6 +324,7 @@ partial class Deserializer : IDeserializer
         throw new NotImplementedException();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ThrowIfEof(short s)
     {
         if (s == Utf8Reader.EofChar)
