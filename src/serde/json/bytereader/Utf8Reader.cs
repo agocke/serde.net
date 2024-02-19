@@ -12,6 +12,9 @@ internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
     private readonly ReadOnlyMemory<byte> _mem = source;
     private int _pos = 0;
 
+    /// <summary>
+    /// Peek at the next character without advancing the position.
+    /// </summary>
     public byte? PeekChar()
     {
         if (_pos >= _mem.Length)
@@ -45,18 +48,21 @@ internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
     /// </summary>
     public byte? PeekNonWhitespace()
     {
+        var span = _mem.Span;
         while (true)
         {
-            var c = PeekChar();
+            if (_pos >= span.Length)
+            {
+                return null;
+            }
+            var c = span[_pos];
             switch (c)
             {
-                case null:
-                    return null;
                 case (byte)' ':
                 case (byte)'\t':
                 case (byte)'\n':
                 case (byte)'\r':
-                    AdvanceChar();
+                    _pos++;
                     break;
                 default:
                     return c;
