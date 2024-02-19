@@ -53,7 +53,7 @@ namespace Serde.Json
         public static T Deserialize<T, D>(string source)
             where D : IDeserialize<T>
         {
-            var deserializer = JsonDeserializer.FromString(source);
+            var deserializer = Deserializer.FromString(source);
             return D.Deserialize(ref deserializer);
         }
     }
