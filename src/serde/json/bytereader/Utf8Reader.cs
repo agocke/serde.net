@@ -9,17 +9,19 @@ namespace Serde.Json;
 
 internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
 {
+    public const short EofChar = -1;
+
     private readonly ReadOnlyMemory<byte> _mem = source;
     private int _pos = 0;
 
     /// <summary>
     /// Peek at the next character without advancing the position.
     /// </summary>
-    public byte? PeekChar()
+    public short PeekChar()
     {
         if (_pos >= _mem.Length)
         {
-            return null;
+            return EofChar;
         }
         return _mem.Span[_pos];
     }
@@ -27,10 +29,10 @@ internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
     /// <summary>
     /// Grab the next character and advance the position.
     /// </summary>
-    public byte? NextChar()
+    public short NextChar()
     {
         var c = PeekChar();
-        if (c != null)
+        if (c != EofChar)
         {
             AdvanceChar();
         }
@@ -46,14 +48,14 @@ internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
     /// Advance the position until we find a non-whitespace character and return it.
     /// Null if we reach the end of the input.
     /// </summary>
-    public byte? PeekNonWhitespace()
+    public short PeekNonWhitespace()
     {
         var span = _mem.Span;
         while (true)
         {
             if (_pos >= span.Length)
             {
-                return null;
+                return EofChar;
             }
             var c = span[_pos];
             switch (c)
@@ -74,11 +76,11 @@ internal sealed class Utf8Reader(ReadOnlyMemory<byte> source)
     {
         switch (PeekNonWhitespace())
         {
+            case EofChar:
+                ThrowJsonException("EOF while reading dictionary");
+                break;
             case (byte)'}':
                 AdvanceChar();
-                break;
-            case null:
-                ThrowJsonException("EOF while reading dictionary");
                 break;
             case (byte)',':
                 ThrowJsonException("Unexpected trailing comma");

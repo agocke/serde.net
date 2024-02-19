@@ -2,15 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Serde.Json;
 
-internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
+internal sealed partial class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 {
     private readonly Utf8Reader _reader = new(source);
     private readonly List<byte> _scratch = new();
+}
 
+partial class Deserializer : IDeserializer
+{
     public static Deserializer FromString(string s)
     {
         return new Deserializer(Encoding.UTF8.GetBytes(s));
@@ -18,11 +22,8 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 
     public T DeserializeAny<T, V>(V v) where V : IDeserializeVisitor<T>
     {
-        var c = _reader.PeekNonWhitespace();
-        if (c == null)
-        {
-            throw new InvalidDeserializeValueException("Unexpected end of stream");
-        }
+        var c = ThrowIfEof(_reader.PeekNonWhitespace());
+
         switch (c)
         {
             case (byte)'n':
@@ -84,8 +85,8 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
         {
             while (true)
             {
-                var c = _deserializer._reader.PeekNonWhitespace();
-                byte? peek;
+                var c = _deserializer.ThrowIfEof(_deserializer._reader.PeekNonWhitespace());
+                short peek;
                 switch (c)
                 {
                     case (byte)'}':
@@ -95,8 +96,6 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
                         _deserializer._reader.AdvanceChar();
                         peek = _deserializer._reader.PeekNonWhitespace();
                         break;
-                    case null:
-                        throw new InvalidDeserializeValueException("Unexpected end of stream");
                     default:
                         if (_first)
                         {
@@ -109,16 +108,15 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
                         }
                         break;
                 }
-                switch (peek) {
+                var ret = _deserializer.ThrowIfEof(peek);
+                switch (ret) {
                     case (byte)'"':
                         next = D.Deserialize(ref _deserializer);
                         return true;
                     case (byte)'}':
                         throw new InvalidDeserializeValueException("Trailing comma");
-                    case null:
-                        throw new InvalidDeserializeValueException("Unexpected end of stream");
                     default:
-                        throw new InvalidDeserializeValueException("Unexpected character: " + (char)peek);
+                        throw new InvalidDeserializeValueException("Unexpected character: " + (char)ret);
                 }
             }
         }
@@ -132,14 +130,12 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 
     private void ParseObjectColon()
     {
-        var c = _reader.PeekNonWhitespace();
+        var c = ThrowIfEof(_reader.PeekNonWhitespace());
         switch (c)
         {
             case (byte)':':
                 _reader.AdvanceChar();
                 break;
-            case null:
-                throw new InvalidDeserializeValueException("Unexpected end of stream");
             default:
                 throw new InvalidDeserializeValueException("Expected ':', got " + (char)c);
         }
@@ -167,10 +163,7 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 
     public T DeserializeDictionary<T, V>(V v) where V : IDeserializeVisitor<T>
     {
-        var peek = _reader.PeekNonWhitespace() switch {
-            null => throw new InvalidDeserializeValueException("Unexpected end of stream"),
-            byte b => b
-        };
+        var peek = ThrowIfEof(_reader.PeekNonWhitespace());
         switch (peek)
         {
             case (byte)'{':
@@ -209,10 +202,7 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 
     public T DeserializeI64<T, V>(V v) where V : IDeserializeVisitor<T>
     {
-        var peek = _reader.PeekNonWhitespace() switch {
-            null => throw new InvalidDeserializeValueException("Unexpected end of stream"),
-            byte b => b
-        };
+        var peek = _reader.PeekNonWhitespace();
         if (peek == (byte)'-')
         {
             _reader.AdvanceChar();
@@ -224,19 +214,16 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
     private byte PeekOrNull()
     {
         var c = _reader.PeekChar();
-        if (c is byte b)
+        if (c != Utf8Reader.EofChar)
         {
-            return b;
+            return (byte)c;
         }
         return (byte)'\x00';
     }
 
     private T ParseAndVisitInteger<T, V>(V v, bool positive) where V : IDeserializeVisitor<T>
     {
-        var next = _reader.NextChar() switch {
-            null => throw new InvalidDeserializeValueException("Unexpected end of stream"),
-            byte b => b
-        };
+        var next = ThrowIfEof(_reader.NextChar());
 
         switch (next)
         {
@@ -298,10 +285,8 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
 
     public T DeserializeString<T, V>(V v) where V : IDeserializeVisitor<T>
     {
-        var peek = _reader.PeekNonWhitespace() switch {
-            null => throw new InvalidDeserializeValueException("Unexpected end of stream"),
-            byte b => b
-        };
+        var peek = ThrowIfEof(_reader.PeekNonWhitespace());
+
         switch (peek)
         {
             case (byte)'"':
@@ -337,5 +322,14 @@ internal sealed class Deserializer(ReadOnlyMemory<byte> source) : IDeserializer
     public T DeserializeU64<T, V>(V v) where V : IDeserializeVisitor<T>
     {
         throw new NotImplementedException();
+    }
+
+    public byte ThrowIfEof(short s)
+    {
+        if (s == Utf8Reader.EofChar)
+        {
+            DeserializerThrowHelper.ThrowUnexpectedEof();
+        }
+        return (byte)s;
     }
 }
