@@ -209,7 +209,10 @@ static {{typeFqn}} Serde.IDeserialize<{{typeFqn}}>.Deserialize(IDeserializer des
                         wrapperName = memberType;
                     }
                     var localName = GetLocalName(m);
-                    localsBuilder.AppendLine($"{memberType} {localName} = default!;");
+
+                    var defaultValue = "default!";
+                    localsBuilder.AppendLine($"{memberType} {localName} = {defaultValue};");
+
                     casesBuilder.AppendLine($"""
                     case {i}:
                         {localName} = typeDeserialize.ReadValue<{memberType}, {wrapperName}>({indexLocalName});

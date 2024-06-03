@@ -18,7 +18,13 @@ namespace Serde;
 /// </summary>
 public sealed class TypeInfo
 {
+    // The field names are sorted by the Utf8 representation of the field name.
+    private readonly ImmutableArray<(ReadOnlyMemory<byte> Utf8Name, int Index)> _nameToIndex;
+    private readonly ImmutableArray<PrivateFieldInfo> _indexToInfo;
+
     public string TypeName { get; }
+
+    public int FieldCount => _nameToIndex.Length;
 
     public enum TypeKind
     {
@@ -94,12 +100,6 @@ public sealed class TypeInfo
         return new TypeInfo(typeName, typeKind, nameToIndexBuilder.ToImmutable(), indexToInfoBuilder.ToImmutable());
     }
 
-    #region Private implementation details
-
-    // The field names are sorted by the Utf8 representation of the field name.
-    private readonly ImmutableArray<(ReadOnlyMemory<byte> Utf8Name, int Index)> _nameToIndex;
-    private readonly ImmutableArray<PrivateFieldInfo> _indexToInfo;
-
     /// <summary>
     /// Holds information for a field or property in the given type.
     /// </summary>
@@ -165,6 +165,4 @@ public sealed class TypeInfo
         // is `lo` at this point.
         return ~lo;
     }
-
-    #endregion  // Private implementation details
 }
