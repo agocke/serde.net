@@ -104,22 +104,6 @@ namespace Serde
     public interface IDeserializer
     {
         T DeserializeAny<T>(IDeserializeVisitor<T> v);
-        T DeserializeBool<T>(IDeserializeVisitor<T> v);
-        T DeserializeChar<T>(IDeserializeVisitor<T> v);
-        T DeserializeByte<T>(IDeserializeVisitor<T> v);
-        T DeserializeU16<T>(IDeserializeVisitor<T> v);
-        T DeserializeU32<T>(IDeserializeVisitor<T> v);
-        T DeserializeU64<T>(IDeserializeVisitor<T> v);
-        T DeserializeSByte<T>(IDeserializeVisitor<T> v);
-        T DeserializeI16<T>(IDeserializeVisitor<T> v);
-        T DeserializeI32<T>(IDeserializeVisitor<T> v);
-        T DeserializeI64<T>(IDeserializeVisitor<T> v);
-        T DeserializeFloat<T>(IDeserializeVisitor<T> v);
-        T DeserializeDouble<T>(IDeserializeVisitor<T> v);
-        T DeserializeDecimal<T>(IDeserializeVisitor<T> v);
-        T DeserializeString<T>(IDeserializeVisitor<T> v);
-        T DeserializeIdentifier<T>(IDeserializeVisitor<T> v);
-        T DeserializeNullableRef<T>(IDeserializeVisitor<T> v);
         IDeserializeCollection DeserializeCollection(TypeInfo typeInfo);
         IDeserializeType DeserializeType(TypeInfo typeInfo);
     }
