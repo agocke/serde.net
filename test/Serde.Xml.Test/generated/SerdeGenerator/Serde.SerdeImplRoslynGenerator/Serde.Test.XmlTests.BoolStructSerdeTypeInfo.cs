@@ -6,8 +6,8 @@ partial class XmlTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "BoolStruct",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("BoolField", typeof(Serde.Test.XmlTests.BoolStruct).GetField("BoolField")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("BoolField", typeof(Serde.Test.XmlTests.BoolStruct).GetField("BoolField")!)
     });
 }
 }

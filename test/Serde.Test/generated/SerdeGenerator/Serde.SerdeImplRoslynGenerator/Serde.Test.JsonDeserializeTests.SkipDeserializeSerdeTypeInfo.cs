@@ -6,9 +6,9 @@ partial class JsonDeserializeTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "SkipDeserialize",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("required", typeof(Serde.Test.JsonDeserializeTests.SkipDeserialize).GetProperty("Required")!),
-("skip", typeof(Serde.Test.JsonDeserializeTests.SkipDeserialize).GetProperty("Skip")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("required", typeof(Serde.Test.JsonDeserializeTests.SkipDeserialize).GetProperty("Required")!),
+new("skip", typeof(Serde.Test.JsonDeserializeTests.SkipDeserialize).GetProperty("Skip")!)
     });
 }
 }

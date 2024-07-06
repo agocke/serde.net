@@ -61,15 +61,15 @@ namespace Benchmarks
         private static readonly TypeInfo s_fieldMap = TypeInfo.Create(
             "Location",
             TypeInfo.TypeKind.CustomType, [
-            ("id", typeof(Location).GetProperty("Id")!),
-            ("address1", typeof(Location).GetProperty("Address1")!),
-            ("address2", typeof(Location).GetProperty("Address2")!),
-            ("city", typeof(Location).GetProperty("City")!),
-            ("state", typeof(Location).GetProperty("State")!),
-            ("postalCode", typeof(Location).GetProperty("PostalCode")!),
-            ("name", typeof(Location).GetProperty("Name")!),
-            ("phoneNumber", typeof(Location).GetProperty("PhoneNumber")!),
-            ("country", typeof(Location).GetProperty("Country")!)
+                new("id", typeof(Location).GetProperty("Id")!),
+                new("address1", typeof(Location).GetProperty("Address1")!),
+                new("address2", typeof(Location).GetProperty("Address2")!),
+                new("city", typeof(Location).GetProperty("City")!),
+                new("state", typeof(Location).GetProperty("State")!),
+                new("postalCode", typeof(Location).GetProperty("PostalCode")!),
+                new("name", typeof(Location).GetProperty("Name")!),
+                new("phoneNumber", typeof(Location).GetProperty("PhoneNumber")!),
+                new("country", typeof(Location).GetProperty("Country")!)
         ]);
 
         static Benchmarks.Location Serde.IDeserialize<Benchmarks.Location>.Deserialize(IDeserializer deserializer)

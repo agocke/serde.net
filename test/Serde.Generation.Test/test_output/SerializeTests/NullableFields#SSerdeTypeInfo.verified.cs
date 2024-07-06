@@ -4,10 +4,10 @@ internal static class SSerdeTypeInfo
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "S",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("fI", typeof(S<,,>).GetField("FI")!),
-("f1", typeof(S<,,>).GetField("F1")!),
-("f2", typeof(S<,,>).GetField("F2")!),
-("f3", typeof(S<,,>).GetField("F3")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("fI", typeof(S<,,>).GetField("FI")!),
+new("f1", typeof(S<,,>).GetField("F1")!),
+new("f2", typeof(S<,,>).GetField("F2")!),
+new("f3", typeof(S<,,>).GetField("F3")!)
     });
 }

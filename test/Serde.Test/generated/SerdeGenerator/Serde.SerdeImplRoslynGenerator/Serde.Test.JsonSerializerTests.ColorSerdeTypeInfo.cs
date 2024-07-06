@@ -6,10 +6,10 @@ partial class JsonSerializerTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "Color",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("red", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Red")!),
-("green", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Green")!),
-("blue", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Blue")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("red", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Red")!),
+new("green", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Green")!),
+new("blue", typeof(Serde.Test.JsonSerializerTests.Color).GetField("Blue")!)
     });
 }
 }

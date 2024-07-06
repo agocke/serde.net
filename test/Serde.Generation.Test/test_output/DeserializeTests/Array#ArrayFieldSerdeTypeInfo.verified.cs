@@ -4,7 +4,7 @@ internal static class ArrayFieldSerdeTypeInfo
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "ArrayField",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("intArr", typeof(ArrayField).GetField("IntArr")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("intArr", typeof(ArrayField).GetField("IntArr")!)
     });
 }

@@ -345,7 +345,7 @@ public static class SWrap
         public static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
             ""S"",
             Serde.TypeInfo.TypeKind.CustomType,
-            new (string, System.Reflection.MemberInfo)[] { (""s"", typeof(S<>).GetField(""Field"")!) });
+            new Serde.TypeInfo.FieldInfo[] { new(""s"", typeof(S<>).GetField(""Field"")!) });
     }
     public readonly struct SerializeImpl<T, TWrap> : ISerialize<S<T>>
         where TWrap : struct, ISerialize<T>
@@ -389,7 +389,7 @@ public readonly struct SWrap<T, TWrap>
     private static readonly Serde.TypeInfo s_typeInfo = Serde.TypeInfo.Create(
         ""S"",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] { (""s"", typeof(S<>).GetField(""Field"")!) });
+        new Serde.TypeInfo.FieldInfo[] { new(""s"", typeof(S<>).GetField(""Field"")!) });
 
     void ISerialize<T>.Serialize(T value, ISerializer serializer)
     {

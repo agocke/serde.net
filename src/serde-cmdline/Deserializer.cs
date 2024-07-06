@@ -1,21 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Serde.CmdLine;
 
 internal sealed class Deserializer(string[] args) : IDeserializer, IDeserializeType
 {
     private int _argIndex = 0;
+    private int _paramIndex = 0;
 
-    IDeserializeType IDeserializer.DeserializeType(TypeInfo typeInfo) => this;
-
-    int IDeserializeType.TryReadIndex(TypeInfo typeInfo, out string? errorName)
+    IDeserializeType IDeserializer.DeserializeType(TypeInfo typeInfo)
     {
-        if (_argIndex == args.Length)
+        if (args.Contains("-h") || args.Contains("--help"))
         {
-            errorName = null;
-            return IDeserializeType.EndOfType;
+            throw new HelpRequestedException(BuildHelpText(typeInfo));
         }
+
+        return this;
+    }
+
+    private static string BuildHelpText(TypeInfo typeInfo)
+    {
+        var args = new List<(string Name, string? Description)>();
+        var options = new List<(string[] Patterns, string? Name)>();
         for (int fieldIndex = 0; fieldIndex < typeInfo.FieldCount; fieldIndex++)
         {
             var attrs = typeInfo.GetCustomAttributeData(fieldIndex);
@@ -24,10 +31,67 @@ internal sealed class Deserializer(string[] args) : IDeserializer, IDeserializeT
                 if (attr is { AttributeType: { Name: nameof(CommandOptionAttribute) },
                               ConstructorArguments: [ { Value: string flagNames } ] })
                 {
+                    // Consider nullable boolean fields as flag options.
+#pragma warning disable SerdeExperimentalFieldType
+                    var optionName = typeInfo.GetFieldType(fieldIndex) == typeof(bool?)
+                        ? null
+                        : $"<{typeInfo.GetStringSerializeName(fieldIndex)}>";
+#pragma warning restore SerdeExperimentalFieldType
+                    options.Add((flagNames.Split('|'), optionName));
+                }
+                else if (attr is { AttributeType: { Name: nameof(CommandParameterAttribute) },
+                               ConstructorArguments: [ { Value: int paramIndex }, { Value: string name } ],
+                               NamedArguments: var namedArgs })
+                {
+                    string? desc = null;
+                    if (namedArgs[0] is { MemberName: nameof(CommandParameterAttribute.Description),
+                                         TypedValue: { Value: string attrDesc } })
+                    {
+                        desc = attrDesc;
+                    }
+                    args.Add(($"<{name}>", desc));
+                }
+            }
+        }
+        const string Indent = "    ";
+        var optionsUsageShortString = string.Join(" ",
+            options.Select(o => $"[{string.Join(" | ", o.Patterns)}{o.Name?.Map(n => " " + n) ?? "" }]"));
+
+        return $"""
+Usage: {typeInfo.TypeName} {optionsUsageShortString} {string.Join(" ", args.Select(a => a.Name))}
+
+Arguments:
+{Indent + string.Join(Environment.NewLine + Indent,
+    args.Select(a => $"{a.Name}{"  " + a.Description ?? ""}"))}
+
+Options:
+{Indent + string.Join(Environment.NewLine + Indent,
+    options.Select(o => $"{string.Join(", ", o.Patterns)}{o.Name?.Map(n => "  " + n) ?? "" }"))}
+
+""";
+    }
+
+    int IDeserializeType.TryReadIndex(TypeInfo typeInfo, out string? errorName)
+    {
+        if (_argIndex == args.Length)
+        {
+            errorName = null;
+            return IDeserializeType.EndOfType;
+        }
+        var arg = args[_argIndex];
+        for (int fieldIndex = 0; fieldIndex < typeInfo.FieldCount; fieldIndex++)
+        {
+            var attrs = typeInfo.GetCustomAttributeData(fieldIndex);
+            foreach (var attr in attrs)
+            {
+                if (arg.StartsWith('-') &&
+                    attr is { AttributeType: { Name: nameof(CommandOptionAttribute) },
+                              ConstructorArguments: [ { Value: string flagNames } ] })
+                {
                     var flagNamesArray = flagNames.Split('|');
                     foreach (var flag in flagNamesArray)
                     {
-                        if (args[_argIndex] == flag)
+                        if (arg == flag)
                         {
                             _argIndex++;
                             errorName = null;
@@ -35,10 +99,18 @@ internal sealed class Deserializer(string[] args) : IDeserializer, IDeserializeT
                         }
                     }
                 }
+                else if (!arg.StartsWith('-') &&
+                         attr is { AttributeType: { Name: nameof(CommandParameterAttribute) },
+                                   ConstructorArguments: [ { Value: int paramIndex }, _ ] } &&
+                         _paramIndex == paramIndex)
+                {
+                    _paramIndex++;
+                    errorName = null;
+                    return fieldIndex;
+                }
             }
         }
-        errorName = args[_argIndex];
-        return IDeserializeType.IndexNotFound;
+        throw new InvalidDeserializeValueException($"Unexpected argument: '{arg}'");
     }
 
     V IDeserializeType.ReadValue<V, D>(int index)

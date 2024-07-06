@@ -46,9 +46,9 @@ internal static class {{typeName}}SerdeTypeInfo
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "{{typeName}}",
         Serde.TypeInfo.TypeKind.{{(receiverType.TypeKind == TypeKind.Enum ? "Enum" : "CustomType")}},
-        new (string, System.Reflection.MemberInfo)[] {
-{{string.Join("," + Environment.NewLine,
-          fieldsAndProps.Select(x => $@"(""{x.GetFormattedName()}"", typeof({typeString}).Get{(x.Symbol.Kind == SymbolKind.Field ? "Field" : "Property")}(""{x.Name}"")!)"))}}
+        new Serde.TypeInfo.FieldInfo[] {
+{{string.Join("," + Environment.NewLine, fieldsAndProps.Select(x =>
+    $@"new(""{x.GetFormattedName()}"", typeof({typeString}).Get{(x.Symbol.Kind == SymbolKind.Field ? "Field" : "Property")}(""{x.Name}"")!)"))}}
     });
 }
 """;

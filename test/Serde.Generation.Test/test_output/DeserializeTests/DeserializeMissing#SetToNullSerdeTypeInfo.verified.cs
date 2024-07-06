@@ -4,9 +4,9 @@ internal static class SetToNullSerdeTypeInfo
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "SetToNull",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("present", typeof(SetToNull).GetProperty("Present")!),
-("missing", typeof(SetToNull).GetProperty("Missing")!),
-("throwMissing", typeof(SetToNull).GetProperty("ThrowMissing")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("present", typeof(SetToNull).GetProperty("Present")!),
+new("missing", typeof(SetToNull).GetProperty("Missing")!),
+new("throwMissing", typeof(SetToNull).GetProperty("ThrowMissing")!)
     });
 }

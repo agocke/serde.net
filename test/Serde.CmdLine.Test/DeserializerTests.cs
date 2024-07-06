@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using Serde;
+using Spectre.Console;
+using Spectre.Console.Testing;
 using Xunit;
 
 namespace Serde.CmdLine.Test;
@@ -22,11 +24,31 @@ public sealed partial class DeserializerTests
         Assert.Equal(new FileSizeCommand { SearchPath = "search-path", SearchPattern = null, IncludeHidden = null }, cmd);
     }
 
+    [Fact]
+    public void TestHelp()
+    {
+        string[] args = [ "--help" ];
+        var testConsole = new TestConsole();
+        CmdLine.Run<FileSizeCommand>(args, testConsole, fileSizeCmd => { });
+        var text = """
+Usage: FileSizeCommand [-p | --pattern <searchPattern>] [--hidden] <searchPath>
+
+Arguments:
+    <searchPath>  Path to search. Defaults to current directory.
+
+Options:
+    -p, --pattern  <searchPattern>
+    --hidden
+
+""";
+        Assert.Equal(text, testConsole.Output);
+    }
+
     [GenerateDeserialize]
     internal sealed partial record FileSizeCommand
     {
-        [Description("Path to search. Defaults to current directory.")]
-        [CommandParameter(0, "[searchPath]")]
+        [CommandParameter(0, "searchPath",
+            Description = "Path to search. Defaults to current directory.")]
         public string? SearchPath { get; init; }
 
         [CommandOption("-p|--pattern")]

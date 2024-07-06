@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -21,6 +22,15 @@ public sealed class TypeInfo
     // The field names are sorted by the Utf8 representation of the field name.
     private readonly ImmutableArray<(ReadOnlyMemory<byte> Utf8Name, int Index)> _nameToIndex;
     private readonly ImmutableArray<PrivateFieldInfo> _indexToInfo;
+
+    /// <summary>
+    /// Holds information for a field or property in the given type.
+    /// </summary>
+    private readonly record struct PrivateFieldInfo(
+        string StringName,
+        int Utf8NameIndex,
+        IList<CustomAttributeData> CustomAttributesData,
+        Type Type);
 
     public string TypeName { get; }
 
@@ -49,12 +59,18 @@ public sealed class TypeInfo
         return mapIndex < 0 ? IDeserializeType.IndexNotFound : _nameToIndex[mapIndex].Index;
     }
 
+    [Experimental("SerdeExperimentalFieldType")]
+    public Type GetFieldType(int index)
+    {
+        return _indexToInfo[index].Type;
+    }
+
     public IList<CustomAttributeData> GetCustomAttributeData(int index)
     {
         return _indexToInfo[index].CustomAttributesData;
     }
 
-    public ReadOnlySpan<byte> GetSerializeName(int index)
+    public Utf8Span GetSerializeName(int index)
     {
         return _nameToIndex[_indexToInfo[index].Utf8NameIndex].Utf8Name.Span;
     }
@@ -64,6 +80,8 @@ public sealed class TypeInfo
         return _indexToInfo[index].StringName;
     }
 
+    public readonly record struct FieldInfo(string SerializeName, MemberInfo MemberInfo);
+
     /// <summary>
     /// Create a new field mapping. The ordering of the fields is important -- it
     /// corresponds to the index returned by <see cref="IDeserializeType.TryReadIndex" />.
@@ -71,20 +89,26 @@ public sealed class TypeInfo
     public static TypeInfo Create(
         string typeName,
         TypeKind typeKind,
-        ReadOnlySpan<(string SerializeName, MemberInfo MemberInfo)> fields)
+        ReadOnlySpan<FieldInfo> fields)
     {
         var nameToIndexBuilder = ImmutableArray.CreateBuilder<(ReadOnlyMemory<byte> Utf8Name, int Index)>(fields.Length);
         var indexToInfoBuilder = ImmutableArray.CreateBuilder<PrivateFieldInfo>(fields.Length);
         for (int index = 0; index < fields.Length; index++)
         {
             var (serializeName, memberInfo) = fields[index];
-            if (memberInfo is null)
+            var memberType = memberInfo switch
             {
-                throw new ArgumentNullException(serializeName);
-            }
+                System.Reflection.FieldInfo f => f.FieldType,
+                PropertyInfo propertyInfo => propertyInfo.PropertyType,
+                _ => throw new ArgumentException("MemberInfo must be a FieldInfo or PropertyInfo"),
+            };
 
             nameToIndexBuilder.Add((s_utf8.GetBytes(serializeName), index));
-            var fieldInfo = new PrivateFieldInfo(serializeName, -1, memberInfo.GetCustomAttributesData());
+            var fieldInfo = new PrivateFieldInfo(
+                serializeName,
+                -1,
+                memberInfo.GetCustomAttributesData(),
+                memberType);
             indexToInfoBuilder.Add(fieldInfo);
         }
 
@@ -99,14 +123,6 @@ public sealed class TypeInfo
 
         return new TypeInfo(typeName, typeKind, nameToIndexBuilder.ToImmutable(), indexToInfoBuilder.ToImmutable());
     }
-
-    /// <summary>
-    /// Holds information for a field or property in the given type.
-    /// </summary>
-    private readonly record struct PrivateFieldInfo(
-        string StringName,
-        int Utf8NameIndex,
-        IList<CustomAttributeData> CustomAttributesData);
 
     private static readonly UTF8Encoding s_utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 

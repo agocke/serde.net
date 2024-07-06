@@ -6,9 +6,9 @@ partial class JsonDeserializeTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "IdStructList",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("count", typeof(Serde.Test.JsonDeserializeTests.IdStructList).GetProperty("Count")!),
-("list", typeof(Serde.Test.JsonDeserializeTests.IdStructList).GetProperty("List")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("count", typeof(Serde.Test.JsonDeserializeTests.IdStructList).GetProperty("Count")!),
+new("list", typeof(Serde.Test.JsonDeserializeTests.IdStructList).GetProperty("List")!)
     });
 }
 }

@@ -6,8 +6,8 @@ partial class GenericWrapperTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "CustomArrayWrapExplicitOnType",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("a", typeof(Serde.Test.GenericWrapperTests.CustomArrayWrapExplicitOnType).GetField("A")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("a", typeof(Serde.Test.GenericWrapperTests.CustomArrayWrapExplicitOnType).GetField("A")!)
     });
 }
 }

@@ -24,12 +24,7 @@ namespace Serde
     /// Thrown from implementations of <see cref="IDeserializer" />. Indicates that an unexpected
     /// value was seen in the input which cannot be converted to the target type.
     /// </summary>
-    public sealed class InvalidDeserializeValueException : Exception
-    {
-        public InvalidDeserializeValueException(string msg)
-        : base(msg)
-        { }
-    }
+    public sealed class InvalidDeserializeValueException(string msg) : Exception(msg);
 
     public interface IDeserializeVisitor<T>
     {

@@ -5,9 +5,9 @@ internal static class ColorULongSerdeTypeInfo
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "ColorULong",
         Serde.TypeInfo.TypeKind.Enum,
-        new (string, System.Reflection.MemberInfo)[] {
-("red", typeof(Some.Nested.Namespace.ColorULong).GetField("Red")!),
-("green", typeof(Some.Nested.Namespace.ColorULong).GetField("Green")!),
-("blue", typeof(Some.Nested.Namespace.ColorULong).GetField("Blue")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("red", typeof(Some.Nested.Namespace.ColorULong).GetField("Red")!),
+new("green", typeof(Some.Nested.Namespace.ColorULong).GetField("Green")!),
+new("blue", typeof(Some.Nested.Namespace.ColorULong).GetField("Blue")!)
     });
 }

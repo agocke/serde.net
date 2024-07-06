@@ -15,9 +15,9 @@ public sealed partial class CustomImplTests
         private static readonly TypeInfo s_fieldMap = TypeInfo.Create(
             "RgbWithFieldMap",
             TypeInfo.TypeKind.CustomType, [
-            ("red", typeof(RgbWithFieldMap).GetField("Red")!),
-            ("green", typeof(RgbWithFieldMap).GetField("Green")!),
-            ("blue", typeof(RgbWithFieldMap).GetField("Blue")!)
+            new("red", typeof(RgbWithFieldMap).GetField("Red")!),
+            new("green", typeof(RgbWithFieldMap).GetField("Green")!),
+            new("blue", typeof(RgbWithFieldMap).GetField("Blue")!)
         ]);
 
         static RgbWithFieldMap IDeserialize<RgbWithFieldMap>.Deserialize(IDeserializer deserializer)

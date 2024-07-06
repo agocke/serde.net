@@ -220,9 +220,8 @@ static {{typeFqn}} Serde.IDeserialize<{{typeFqn}}>.Deserialize(IDeserializer des
                         break;
                     """);
 
-                    // Require that the member is assigned if m.ThrowIfMissing is set, or if it is not nullable
-                    // and ThrowIfMissing is unset
-                    if (m.ThrowIfMissing == true || (!m.IsNullable && m.ThrowIfMissing == null))
+                    // Unless the member is optional, require that it be assigned
+                    if (!m.IsOptional)
                     {
                         assignedMaskValue |= 1L << i;
                     }

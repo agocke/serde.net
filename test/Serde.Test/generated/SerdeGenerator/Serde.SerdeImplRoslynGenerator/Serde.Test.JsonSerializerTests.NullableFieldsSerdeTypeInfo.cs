@@ -6,9 +6,9 @@ partial class JsonSerializerTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "NullableFields",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("s", typeof(Serde.Test.JsonSerializerTests.NullableFields).GetField("S")!),
-("d", typeof(Serde.Test.JsonSerializerTests.NullableFields).GetField("D")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("s", typeof(Serde.Test.JsonSerializerTests.NullableFields).GetField("S")!),
+new("d", typeof(Serde.Test.JsonSerializerTests.NullableFields).GetField("D")!)
     });
 }
 }

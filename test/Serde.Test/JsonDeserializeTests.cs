@@ -326,9 +326,9 @@ namespace Serde.Test
                 nameof(ColorEnum),
                 TypeInfo.TypeKind.Enum,
                 [
-                    ("red", typeof(ColorEnum).GetField("Red")!),
-                    ("green", typeof(ColorEnum).GetField("Green")!),
-                    ("blue", typeof(ColorEnum).GetField("Blue")!),
+                    new("red", typeof(ColorEnum).GetField("Red")!),
+                    new("green", typeof(ColorEnum).GetField("Green")!),
+                    new("blue", typeof(ColorEnum).GetField("Blue")!),
                 ]
             );
 

@@ -6,8 +6,8 @@ partial class XmlTests
     internal static readonly Serde.TypeInfo TypeInfo = Serde.TypeInfo.Create(
         "MapTest1",
         Serde.TypeInfo.TypeKind.CustomType,
-        new (string, System.Reflection.MemberInfo)[] {
-("MapField", typeof(Serde.Test.XmlTests.MapTest1).GetField("MapField")!)
+        new Serde.TypeInfo.FieldInfo[] {
+new("MapField", typeof(Serde.Test.XmlTests.MapTest1).GetField("MapField")!)
     });
 }
 }
