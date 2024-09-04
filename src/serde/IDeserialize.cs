@@ -108,6 +108,8 @@ namespace Serde
 
         V ReadValue<V, D>(int index) where D : IDeserialize<V>;
 
+        string ReadString(int index);
+
         void SkipValue();
     }
 
@@ -128,6 +130,7 @@ namespace Serde
         T DeserializeDouble<T>(IDeserializeVisitor<T> v);
         T DeserializeDecimal<T>(IDeserializeVisitor<T> v);
         T DeserializeString<T>(IDeserializeVisitor<T> v);
+        string ReadString();
         T DeserializeIdentifier<T>(IDeserializeVisitor<T> v);
         T DeserializeNullableRef<T>(IDeserializeVisitor<T> v);
         IDeserializeCollection DeserializeCollection(ISerdeInfo typeInfo);

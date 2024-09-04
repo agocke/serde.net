@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Unicode;
 using System.Threading;
 using System.Xml.Linq;
 using Serde.IO;
@@ -395,6 +396,19 @@ internal sealed partial class JsonDeserializer<TReader> : IDeserializer
         return v.VisitUtf8Span(span);
     }
 
+    public string ReadString()
+    {
+        var peek = ThrowIfEos(Reader.SkipWhitespace());
+        if (peek != (byte)'"')
+        {
+            throw new JsonException($"Expected '\"', found: '{(char)peek}'");
+        }
+        Reader.Advance();
+        _scratch.Clear();
+        var span = Reader.LexUtf8Span(_scratch);
+        return Encoding.UTF8.GetString(span);
+    }
+
     public T DeserializeIdentifier<T>(IDeserializeVisitor<T> v)
         => DeserializeString(v);
 
@@ -478,6 +492,17 @@ partial class JsonDeserializer<TReader> : IDeserializeType
         }
         Reader.Advance();
         return D.Deserialize(this);
+    }
+
+    string IDeserializeType.ReadString(int index)
+    {
+        var peek = ThrowIfEos(Reader.SkipWhitespace());
+        if (peek != (byte)':')
+        {
+            throw new JsonException("Expected ':'");
+        }
+        Reader.Advance();
+        return ReadString();
     }
 
     void IDeserializeType.SkipValue()

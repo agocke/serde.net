@@ -97,35 +97,35 @@ namespace Benchmarks
                         _r_assignedValid |= ((ushort)1) << 0;
                         break;
                     case 1:
-                        _l_address1 = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_address1 = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 1;
                         break;
                     case 2:
-                        _l_address2 = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_address2 = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 2;
                         break;
                     case 3:
-                        _l_city = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_city = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 3;
                         break;
                     case 4:
-                        _l_state = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_state = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 4;
                         break;
                     case 5:
-                        _l_postalcode = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_postalcode = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 5;
                         break;
                     case 6:
-                        _l_name = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_name = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 6;
                         break;
                     case 7:
-                        _l_phonenumber = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_phonenumber = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 7;
                         break;
                     case 8:
-                        _l_country = typeDeserialize.ReadValue<string, StringWrap>(index);
+                        _l_country = typeDeserialize.ReadString(index);
                         _r_assignedValid |= ((ushort)1) << 8;
                         break;
                 }

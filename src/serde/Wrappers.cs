@@ -403,16 +403,7 @@ public readonly partial record struct StringWrap(string Value)
     }
     public static string Deserialize(IDeserializer deserializer)
     {
-        return deserializer.DeserializeString(SerdeVisitor.Instance);
-    }
-
-    private sealed class SerdeVisitor : IDeserializeVisitor<string>
-    {
-        public static readonly SerdeVisitor Instance = new SerdeVisitor();
-        public string ExpectedTypeName => s_typeName;
-        public string VisitString(string s) => s;
-        string IDeserializeVisitor<string>.VisitChar(char c) => c.ToString();
-        string IDeserializeVisitor<string>.VisitUtf8Span(Utf8Span s) => Encoding.UTF8.GetString(s);
+        return deserializer.ReadString();
     }
 }
 
