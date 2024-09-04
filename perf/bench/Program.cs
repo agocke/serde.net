@@ -31,6 +31,6 @@ Serde:
 """);
 }
 
-var config = DefaultConfig.Instance.AddDiagnoser(new EtwProfiler());
+var config = DefaultConfig.Instance.AddDiagnoser(MemoryDiagnoser.Default);
 var summary = BenchmarkSwitcher.FromAssembly(typeof(SerializeToString<>).Assembly)
     .Run(args, config);
