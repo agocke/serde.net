@@ -201,6 +201,24 @@ partial class A
             return VerifyDeserialize(src);
         }
 
+        [Fact]
+        public Task DeserializeSum()
+        {
+            var src = """
+using Serde;
+
+[GenerateDeserialize]
+abstract partial record Sum
+{
+    private Sum() { }
+
+    public partial record A(int Field) : Sum;
+    public partial record B(string Field) : Sum;
+}
+""";
+            return VerifyDeserialize(src);
+        }
+
         private static Task VerifyDeserialize(
             string src,
             [CallerMemberName] string caller = "")

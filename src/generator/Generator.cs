@@ -106,6 +106,15 @@ public partial class SerdeImplRoslynGenerator : IIncrementalGenerator
                             typeDecl.Identifier.ValueText));
                         return;
                     }
+                    else if (typeSymbol.IsAbstract)
+                    {
+                        // Type must not be abstract
+                        generationContext.ReportDiagnostic(CreateDiagnostic(
+                            DiagId.ERR_TypeIsAbstract,
+                            typeDecl.Identifier.GetLocation(),
+                            typeDecl.Identifier.ValueText));
+                        return;
+                    }
                 }
 
                 if (typeDecl.IsKind(SyntaxKind.EnumDeclaration))

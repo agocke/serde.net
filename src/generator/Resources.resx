@@ -135,4 +135,7 @@
   <data name="ERR_WrapperDoesntImplementInterface" xml:space="preserve">
     <value>The proxy type '{0}' doesn't implement the interface '{2}&lt;{1}&gt;'.</value>
   </data>
+  <data name="ERR_TypeIsAbstract" xml:space="preserve">
+    <value>Automatic generation is not supported for abstract types.</value>
+  </data>
 </root>

@@ -17,6 +17,7 @@ namespace Serde
         ERR_CantFindConstructorSignature = 4,
         ERR_CantFindNestedWrapper = 5,
         ERR_WrapperDoesntImplementInterface = 6,
+        ERR_TypeIsAbstract = 7,
     }
 
     internal static class Diagnostics
@@ -29,6 +30,7 @@ namespace Serde
             ERR_CantFindConstructorSignature => nameof(ERR_CantFindConstructorSignature),
             ERR_CantFindNestedWrapper => nameof(ERR_CantFindNestedWrapper),
             ERR_WrapperDoesntImplementInterface => nameof(ERR_WrapperDoesntImplementInterface),
+            ERR_TypeIsAbstract => nameof(ERR_TypeIsAbstract),
         };
 
         public static Diagnostic CreateDiagnostic(DiagId id, Location location, params object[] args)

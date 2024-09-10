@@ -487,6 +487,24 @@ partial class A
             return VerifySerialize(src);
         }
 
+        [Fact]
+        public Task SerializeSum()
+        {
+            var src = """
+using Serde;
+
+[GenerateSerialize]
+abstract partial record Sum
+{
+    private Sum() { }
+
+    public partial record A(int Field) : Sum;
+    public partial record B(string Field) : Sum;
+}
+""";
+            return VerifySerialize(src);
+        }
+
         private static Task VerifySerialize(
             string src,
             [CallerMemberName] string? callerName = null)
