@@ -83,6 +83,13 @@ namespace Serde.Json
             return Deserialize_Unsafe(utf8Bytes, d);
         }
 
+        public static JsonValue DeserializeJsonValue(string source)
+        {
+            var bytes = Encoding.UTF8.GetBytes(source);
+            using var deserializer = JsonDeserializer.FromUtf8_Unsafe(bytes);
+            return deserializer.DeserializeJsonValue();
+        }
+
         /// <summary>
         /// Assumes the input is valid UTF-8.
         /// </summary>

@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Serde.IO;
@@ -176,5 +178,35 @@ internal sealed partial class JsonDeserializer<TReader> : IDeserializer
     {
         _scratch.Dispose();
         _scratch = null!;
+    }
+
+    internal JsonValue DeserializeJsonValue()
+    {
+        // States
+        const byte None = 0;
+        const byte Array = 1;
+        const byte Object = 2;
+        var stack = new List<byte>();
+
+        JsonValue Helper()
+        {
+            var peek = Reader.SkipWhitespace();
+            switch (peek)
+            {
+                case (byte)'"':
+                    return new JsonValue.String(ReadString());
+                case (byte)'t':
+                case (byte)'f':
+                    return new JsonValue.Bool(ReadBool());
+                case (byte)'n' when Reader.StartsWith("null"u8):
+                    Reader.Advance(4);
+                    return JsonValue.Null.Instance;
+                case (byte)'-' or (>= (byte)'0' and <= (byte)'9'):
+                    _scratch.Clear();
+                    return new JsonValue.Number(Reader.GetDouble(_scratch));
+                case (byte)'[':
+                    var builder = ImmutableArray.CreateBuilder<JsonValue>();
+            }
+        }
     }
 }

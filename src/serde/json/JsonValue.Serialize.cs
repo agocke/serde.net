@@ -8,6 +8,7 @@ namespace Serde.Json
 {
     partial record JsonValue : ISerializeProvider<JsonValue>
     {
+        static ISerdeInfo ISerdeInfoProvider.SerdeInfo => JsonValue.UnionInfo.Instance;
         static ISerialize<JsonValue> ISerializeProvider<JsonValue>.SerializeInstance { get; }
             = JsonValueSerialize.Instance;
     }
