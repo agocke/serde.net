@@ -45,6 +45,7 @@ public interface ISerializeProvider<T>
 
 public static class SerializeProvider
 {
+    public static ISerialize<T> GetSerialize<T>() where T : ISerializeProvider<T> => T.Instance;
     public static ISerialize<T> GetSerialize<T, TProvider>()
         where TProvider : ISerializeProvider<T>
         => TProvider.Instance;

@@ -22,6 +22,7 @@ public interface IDeserializeProvider<T>
 
 public static class DeserializeProvider
 {
+    public static IDeserialize<T> GetDeserialize<T>() where T : IDeserializeProvider<T> => T.Instance;
     public static IDeserialize<T> GetDeserialize<T, TProvider>()
         where TProvider : IDeserializeProvider<T>
         => TProvider.Instance;
