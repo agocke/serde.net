@@ -39,6 +39,11 @@ partial class JsonSerializer
             serializer.WriteU64(u64);
         }
 
+        public void WriteU128(ISerdeInfo serdeInfo, int index, UInt128 u128)
+        {
+            serializer.WriteU128(u128);
+        }
+
         public void WriteI8(ISerdeInfo typeInfo, int index, sbyte b)
         {
             serializer.WriteI8(b);
@@ -57,6 +62,11 @@ partial class JsonSerializer
         public void WriteI64(ISerdeInfo typeInfo, int index, long i64)
         {
             serializer.WriteI64(i64);
+        }
+
+        public void WriteI128(ISerdeInfo serdeInfo, int index, Int128 i128)
+        {
+            serializer.WriteI128(i128);
         }
 
         public void WriteF32(ISerdeInfo typeInfo, int index, float f)
@@ -132,6 +142,10 @@ partial class JsonSerializer
         ITypeSerializer ISerializer.WriteCollection(ISerdeInfo typeInfo, int? size) => throw new KeyNotStringException();
         ITypeSerializer ISerializer.WriteType(ISerdeInfo typeInfo) => throw new KeyNotStringException();
         public void WriteNull() => throw new KeyNotStringException();
+
+        public void WriteU128(UInt128 u128) => throw new KeyNotStringException();
+
+        public void WriteI128(Int128 i128) => throw new KeyNotStringException();
     }
 
     private sealed class DictImpl(JsonSerializer serializer) : ITypeSerializer
@@ -152,12 +166,14 @@ partial class JsonSerializer
         public void WriteI16(ISerdeInfo typeInfo, int index, short i16) => GetSerializer(index).WriteI16(i16);
         public void WriteI32(ISerdeInfo typeInfo, int index, int i32) => GetSerializer(index).WriteI32(i32);
         public void WriteI64(ISerdeInfo typeInfo, int index, long i64) => GetSerializer(index).WriteI64(i64);
+        public void WriteI128(ISerdeInfo serdeInfo, int index, Int128 i128) => GetSerializer(index).WriteI128(i128);
         public void WriteI8(ISerdeInfo typeInfo, int index, sbyte b) => GetSerializer(index).WriteI8(b);
         public void WriteNull(ISerdeInfo typeInfo, int index) => GetSerializer(index).WriteNull();
         public void WriteString(ISerdeInfo typeInfo, int index, string s) => GetSerializer(index).WriteString(s);
         public void WriteU16(ISerdeInfo typeInfo, int index, ushort u16) => GetSerializer(index).WriteU16(u16);
         public void WriteU32(ISerdeInfo typeInfo, int index, uint u32) => GetSerializer(index).WriteU32(u32);
         public void WriteU64(ISerdeInfo typeInfo, int index, ulong u64) => GetSerializer(index).WriteU64(u64);
+        public void WriteU128(ISerdeInfo serdeInfo, int index, UInt128 u128) => GetSerializer(index).WriteU128(u128);
         public void WriteU8(ISerdeInfo typeInfo, int index, byte b) => GetSerializer(index).WriteU8(b);
         public void WriteDateTime(ISerdeInfo typeInfo, int index, DateTime dt) => GetSerializer(index).WriteDateTime(dt);
         public void WriteDateTimeOffset(ISerdeInfo typeInfo, int index, DateTimeOffset dt) => GetSerializer(index).WriteDateTimeOffset(dt);
