@@ -22,11 +22,13 @@ namespace Serde.Test
         public ushort UShortField;
         public uint UIntField;
         public ulong ULongField;
+        public UInt128 U128Field;
 
         public sbyte SByteField;
         public short ShortField;
         public int IntField;
         public long LongField;
+        public Int128 I128Field;
         public string StringField = "StringValue";
         public DateTimeOffset DateTimeOffsetField;
         public DateTime DateTimeField;
@@ -62,10 +64,12 @@ namespace Serde.Test
                 UShortField == other.UShortField &&
                 UIntField == other.UIntField &&
                 ULongField == other.ULongField &&
+                U128Field == other.U128Field &&
                 SByteField == other.SByteField &&
                 ShortField == other.ShortField &&
                 IntField == other.IntField &&
                 LongField == other.LongField &&
+                I128Field == other.I128Field &&
                 StringField == other.StringField &&
                 DateTimeOffsetField == other.DateTimeOffsetField &&
                 DateTimeField == other.DateTimeField &&
@@ -105,11 +109,13 @@ namespace Serde.Test
             UShortField = ushort.MaxValue,
             UIntField = uint.MaxValue,
             ULongField = ulong.MaxValue,
+            U128Field = UInt128.MaxValue,
 
             SByteField = sbyte.MaxValue,
             ShortField = short.MaxValue,
             IntField = int.MaxValue,
             LongField = long.MaxValue,
+            I128Field = Int128.MaxValue,
             StringField = "StringValue",
             DateTimeOffsetField = new DateTimeOffset(2040, 1, 1, 1, 1, 1, TimeSpan.FromHours(-7)),
             DateTimeField = new DateTime(2040, 1, 1, 1, 1, 1, DateTimeKind.Utc),
@@ -139,10 +145,12 @@ namespace Serde.Test
   "uShortField": 65535,
   "uIntField": 4294967295,
   "uLongField": 18446744073709551615,
+  "u128Field": 340282366920938463463374607431768211455,
   "sByteField": 127,
   "shortField": 32767,
   "intField": 2147483647,
   "longField": 9223372036854775807,
+  "i128Field": 170141183460469231731687303715884105727,
   "stringField": "StringValue",
   "dateTimeOffsetField": "2040-01-01T01:01:01-07:00",
   "dateTimeField": "2040-01-01T01:01:01Z",
