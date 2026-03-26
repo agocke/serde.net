@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Serde
 {
@@ -184,6 +185,54 @@ namespace Serde
                     wordBuilder.Clear();
                 }
             }
+        }
+
+        private static readonly SymbolDisplayFormat s_fullyQualifiedMemberFormat =
+            SymbolDisplayFormat.FullyQualifiedFormat
+                .WithMemberOptions(SymbolDisplayMemberOptions.IncludeContainingType);
+
+        /// <summary>
+        /// Returns a safe initializer expression string for this member, or null if there is no
+        /// initializer or the initializer cannot be safely preserved. Only preserves compile-time
+        /// constants and simple static member access (e.g., string.Empty).
+        /// </summary>
+        public string? GetInitializer(Compilation compilation)
+        {
+            foreach (var syntaxRef in Symbol.DeclaringSyntaxReferences)
+            {
+                var syntax = syntaxRef.GetSyntax();
+                EqualsValueClauseSyntax? initializer = syntax switch
+                {
+                    VariableDeclaratorSyntax v => v.Initializer,
+                    PropertyDeclarationSyntax p => p.Initializer,
+                    _ => null
+                };
+                if (initializer is null)
+                    continue;
+
+                var semanticModel = compilation.GetSemanticModel(syntax.SyntaxTree);
+                var expr = initializer.Value;
+
+                // Check if the expression resolves to a symbol we can safely fully-qualify.
+                var symbolInfo = semanticModel.GetSymbolInfo(expr);
+                if (symbolInfo.Symbol is IFieldSymbol { IsStatic: true } or
+                    IPropertySymbol { IsStatic: true })
+                {
+                    return symbolInfo.Symbol.ToDisplayString(s_fullyQualifiedMemberFormat);
+                }
+
+                // Check if it's a compile-time constant. Since it's not a symbol,
+                // it must be a literal expression — safe to use the original text,
+                // which naturally preserves syntax like null! and numeric suffixes.
+                // Reject invocation expressions like nameof(X) where the argument
+                // could reference a symbol not in scope in the generated file.
+                var constant = semanticModel.GetConstantValue(expr);
+                if (constant.HasValue && expr is not InvocationExpressionSyntax)
+                {
+                    return expr.ToString();
+                }
+            }
+            return null;
         }
     }
 }
